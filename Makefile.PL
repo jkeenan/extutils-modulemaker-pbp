@@ -7,8 +7,9 @@ WriteMakefile(
     NAME         => 'ExtUtils::ModuleMaker::PBP',
     VERSION_FROM => 'lib/ExtUtils/ModuleMaker/PBP.pm', # finds \$VERSION
     AUTHOR       => 'James E Keenan (jkeenan@cpan.org)',
-    ABSTRACT     => 'Create a Perl extension in the style of Damian Conway\'s \"Perl Best Practices\"',
+    ABSTRACT     => 'Create a Perl extension in the style of Damian Conway\'s Perl Best Practices',
     PREREQ_PM    => {
-                     'Test::Simple' => 0.44,
+                     'Test::Simple'             => 0.44,
+                     'ExtUtils::ModuleMaker'    => 0.39,
                     },
 );
