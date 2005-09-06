@@ -25,11 +25,13 @@ $obj = ExtUtils::ModuleMaker::PBP->new(
 isa_ok($obj, 'ExtUtils::ModuleMaker::PBP');
 ok( $obj->complete_build(), "call complete build");
 
+warn $obj->dump_keys_except(
+    qw{ USAGE_MESSAGE LicenseParts COMPOSITE }
+);
+
+
 __END__
 
-#warn $obj->dump_keys_except(
-#    qw{ USAGE_MESSAGE LicenseParts COMPOSITE }
-#);
 
 
 

@@ -3,6 +3,6 @@ TODO list for Perl module ExtUtils::ModuleMaker::PBP
 - Implement 'use version' style for $self->{VERSION}, e.g., in Changes.
 - Module::Starter::PBP uses 2-digit test numbers beginning with 00.
 - Module::Starter::PBP defaults to compact top-level directory;  EU::MM does
-  not.  Have to fix.
+  not.  Have to fix.  DONE:  Tue Sep  6 19:12:25 EDT 2005
 
 

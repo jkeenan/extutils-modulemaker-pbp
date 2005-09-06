@@ -60,6 +60,22 @@ will create a CPAN-ready Perl distribution the content of whose files reflects
 programming practices recommended by Damian Conway in his book I<Perl Best
 Practices> (O'Reilly, 2005) L<http://www.oreilly.com/catalog/perlbp/>.
 
+=head1 DEFAULT VALUES
+
+The following default value(s) for ExtUtils::ModuleMaker::PBP differs from
+that of ExtUtils::ModuleMaker:
+
+    $self->{COMPACT} = 1;  # default to compact top directory
+
+=cut
+
+sub default_values {
+    my $self = shift;
+    my $defaults_ref = $self->SUPER::default_values();
+    $defaults_ref->{COMPACT} = 1;
+    return $defaults_ref;;
+}
+
 =head1 METHODS
 
 =head2 Methods Called within C<complete_build()>
@@ -198,60 +214,8 @@ WriteMakefile(
 
 sub text_README {
     my $self = shift;
-#    my %README_text = (
-#        eumm_instructions => <<'END_OF_MAKE',
-#    perl Makefile.PL
-#    make
-#    make test
-#    make install
-#END_OF_MAKE
-#        mb_instructions => <<'END_OF_BUILD',
-#    perl Build.PL
-#    ./Build
-#    ./Build test
-#    ./Build install
-#END_OF_BUILD
-#        readme_top => <<'END_OF_TOP',
-#
-#If this is still here it means the programmer was too lazy to create the readme file.
-#
-#You can create it now by using the command shown above from this directory.
-#
-#At the very least you should be able to use this set of instructions
-#to install the module...
-#
-#END_OF_TOP
-#        readme_bottom => <<'END_OF_BOTTOM',
-#
-#If you are on a windows box you should use 'nmake' rather than 'make'.
-#END_OF_BOTTOM
-#    );
-#
-#    my $pod2textline = "pod2text $self->{NAME}.pm > README\n";
-#    my $build_instructions =
-#        ( $self->{BUILD_SYSTEM} eq 'ExtUtils::MakeMaker' )
-#            ? $README_text{eumm_instructions}
-#            : $README_text{mb_instructions};
-#    return $pod2textline . 
-#        $README_text{readme_top} .
-#        $build_instructions .
-#        $README_text{readme_bottom};
 
-    my $makemaker_instructions => <<'END_OF_MAKE',
-    perl Makefile.PL
-    make
-    make test
-    make install
-END_OF_MAKE
-
-    my $mb_instructions => <<'END_OF_BUILD',
-    perl Build.PL
-    ./Build
-    ./Build test
-    ./Build install
-END_OF_BUILD
-
-    my $README_text = <<"END_OF_README";
+    my $README_top = <<"END_OF_TOP";
 $self->{NAME} version $self->{VERSION}
 
 [ REPLACE THIS...
@@ -273,11 +237,30 @@ INSTALLATION
 
 To install this module, run the following commands:
 
-$makemaker_instructions
+END_OF_TOP
 
-Alternatively, to install with Module::Build, you can use the following commands:
+    my $makemaker_instructions = <<'END_OF_MAKE';
+    perl Makefile.PL
+    make
+    make test
+    make install
+END_OF_MAKE
 
-$mb_instructions
+    my $mb_instructions = <<'END_OF_BUILD';
+    perl Build.PL
+    ./Build
+    ./Build test
+    ./Build install
+END_OF_BUILD
+
+    my $README_middle = <<'END_OF_MIDDLE';
+
+Alternatively, to install with Module::Build, you can use the 
+following commands:
+
+END_OF_MIDDLE
+
+    my $README_bottom = <<"END_OF_README";
 
 
 DEPENDENCIES
@@ -287,12 +270,17 @@ None.
 
 COPYRIGHT AND LICENSE
 
-Copyright (C) $self->{CopyrightYear}, $self->{AUTHOR}
+Copyright (C) $self->{COPYRIGHT_YEAR}, $self->{AUTHOR}
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 END_OF_README
-    return $README_text;
+
+    return  $README_top . 
+            $makemaker_instructions . 
+            $README_middle .
+            $mb_instructions . 
+            $README_bottom;
 }
 
 
