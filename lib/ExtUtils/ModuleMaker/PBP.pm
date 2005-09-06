@@ -142,6 +142,49 @@ EOF
     return $text_of_Changes;
 }
 
+=head3 C<text_Makefile()>
+
+  Usage     : $self->text_Makefile() within complete_build()
+  Purpose   : Build Makefile
+  Returns   : String holding text of Makefile
+  Argument  : n/a
+  Throws    : n/a
+  Comment   : This method is a likely candidate for alteration in a subclass
+
+=cut
+
+sub text_Makefile {
+    my $self = shift;
+    my $Makefile_format = q~
+use strict;
+use warnings;
+use ExtUtils::MakeMaker;
+
+WriteMakefile(
+    NAME            => '%s',
+    AUTHOR          => '%s <%s>',
+    VERSION_FROM    => '%s',
+    ABSTRACT_FROM   => '%s',
+    PL_FILES        => {},
+    PREREQ_PM    => {
+        'Test::More'    => 0,
+        'version'       => 0,
+    },
+    dist            => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
+    clean           => { FILES => '%s-*' },
+);
+~;
+    my $text_of_Makefile = sprintf $Makefile_format,
+        map { my $s = $_; $s =~ s{'}{\\'}g; $s; }
+            $self->{NAME},
+            $self->{AUTHOR},
+            $self->{EMAIL},
+            $self->{FILE},
+            $self->{FILE},
+            $self->{FILE};
+    return $text_of_Makefile;
+}
+
 
 #=head3 C<create_base_directory>
 #
@@ -369,44 +412,6 @@ EOF
 #    }
 #
 #    return $text_of_test_file;
-#}
-#
-#=head3 C<text_Makefile()>
-#
-#  Usage     : $self->text_Makefile() within complete_build()
-#  Purpose   : Build Makefile
-#  Returns   : String holding text of Makefile
-#  Argument  : n/a
-#  Throws    : n/a
-#  Comment   : This method is a likely candidate for alteration in a subclass
-#
-#=cut
-#
-#sub text_Makefile {
-#    my $self = shift;
-#    my $Makefile_format = q~
-#
-#use ExtUtils::MakeMaker;
-## See lib/ExtUtils/MakeMaker.pm for details of how to influence
-## the contents of the Makefile that is written.
-#WriteMakefile(
-#    NAME         => '%s',
-#    VERSION_FROM => '%s', # finds \$VERSION
-#    AUTHOR       => '%s (%s)',
-#    ABSTRACT     => '%s',
-#    PREREQ_PM    => {
-#                     'Test::Simple' => 0.44,
-#                    },
-#);
-#~;
-#    my $text_of_Makefile = sprintf $Makefile_format,
-#        map { my $s = $_; $s =~ s{'}{\\'}g; $s; }
-#            $self->{NAME},
-#            $self->{FILE},
-#            $self->{AUTHOR},
-#            $self->{EMAIL},
-#            $self->{ABSTRACT};
-#    return $text_of_Makefile;
 #}
 #
 #=head3 C<text_proxy_makefile()>
