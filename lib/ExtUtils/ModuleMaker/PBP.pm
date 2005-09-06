@@ -21,7 +21,38 @@ ExtUtils::ModuleMaker::PBP - Create a Perl extension in the style of Damian Conw
 
 =head1 SYNOPSIS
 
+    use ExtUtils::ModuleMaker::PBP;
+
+    $mod = ExtUtils::ModuleMaker::PBP->new(
+        NAME => 'Sample::Module' 
+    );
+
+    $mod->complete_build();
+
+    $mod->dump_keys(qw|
+        ...  # key provided as argument to constructor
+        ...  # same
+    |);
+
+    $mod->dump_keys_except(qw|
+        ...  # key provided as argument to constructor
+        ...  # same
+    |);
+
+    $license = $mod->get_license();
+
+    $mod->make_selections_defaults();
+
+=head1 VERSION
+
+This document references version 0.01 of ExtUtils::ModuleMaker::PBP, released
+to CPAN on September 5, 2005.
+
 =head1 DESCRIPTION
+
+ExtUtils::ModuleMaker::PBP subclasses Perl extension ExtUtils::ModuleMaker.
+If you are not already familiar with ExtUtils::ModuleMaker, you should read
+its documentation I<now>.
 
 The methods described below supersede the similarly named methods in
 ExtUtils::ModuleMaker::StandardText.pm.  When used as described herein, they
@@ -72,6 +103,45 @@ END_OF_BUILDFILE
     return $text_of_Buildfile;
 }
 # add-to-cleanup      => [ '${self->{NAME}}-*' ],
+
+=head3 C<text_Changes()>
+
+  Usage     : $self->text_Changes($only_in_pod) within complete_build; 
+              block_pod()
+  Purpose   : Composes text for Changes file
+  Returns   : String holding text for Changes file
+  Argument  : $only_in_pod:  True value to get only a HISTORY section for POD
+                             False value to get whole Changes file
+  Throws    : n/a
+  Comment   : This method is a likely candidate for alteration in a subclass
+  Comment   : Accesses $self keys NAME, VERSION, timestamp, eumm_version
+
+=cut
+
+sub text_Changes {
+    my ( $self, $only_in_pod ) = @_;
+    my $text_of_Changes;
+    
+    my $text_of_Changes_core = <<END_OF_CHANGES;
+$self->{VERSION} $self->{timestamp}
+    - Initial release.  Created by ExtUtils::ModuleMaker $self->{eumm_version}.
+
+END_OF_CHANGES
+
+    unless ($only_in_pod) {
+        $text_of_Changes = <<EOF;
+Revision history for $self->{NAME}
+
+$text_of_Changes_core
+EOF
+    }
+    else {
+        $text_of_Changes = $text_of_Changes_core;
+    }
+
+    return $text_of_Changes;
+}
+
 
 #=head3 C<create_base_directory>
 #
@@ -241,45 +311,6 @@ END_OF_BUILDFILE
 #EOF
 #
 #    return $text;
-#}
-#
-#=head3 C<text_Changes()>
-#
-#  Usage     : $self->text_Changes($only_in_pod) within complete_build; 
-#              block_pod()
-#  Purpose   : Composes text for Changes file
-#  Returns   : String holding text for Changes file
-#  Argument  : $only_in_pod:  True value to get only a HISTORY section for POD
-#                             False value to get whole Changes file
-#  Throws    : n/a
-#  Comment   : This method is a likely candidate for alteration in a subclass
-#  Comment   : Accesses $self keys NAME, VERSION, timestamp, eumm_version
-#
-#=cut
-#
-#sub text_Changes {
-#    my ( $self, $only_in_pod ) = @_;
-#
-#    my $text_of_Changes;
-#
-#    unless ($only_in_pod) {
-#        $text_of_Changes = <<EOF;
-#Revision history for Perl module $self->{NAME}
-#
-#$self->{VERSION} $self->{timestamp}
-#    - original version; created by ExtUtils::ModuleMaker $self->{eumm_version}
-#
-#
-#EOF
-#    }
-#    else {
-#        $text_of_Changes = <<EOF;
-#$self->{VERSION} $self->{timestamp}
-#    - original version; created by ExtUtils::ModuleMaker $self->{eumm_version}
-#EOF
-#    }
-#
-#    return $text_of_Changes;
 #}
 #
 #=head3 C<text_test()>
@@ -860,8 +891,12 @@ END_OF_BUILDFILE
 #        $cutline,  # required 
 #        $tail      # optional
 #    );
-#}
+#
 
+=head1 PREREQUISITES
+
+ExtUtils::ModuleMaker, version 0.39 or later.
+L<http://search.cpan.org/dist/ExtUtils-ModuleMaker/>.
 
 1;
 # The preceding line will help the module return a true value

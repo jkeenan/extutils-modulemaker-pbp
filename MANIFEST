@@ -4,5 +4,6 @@ README
 Todo
 Changes
 lib/ExtUtils/ModuleMaker/PBP.pm
-t/001_load.t
+t/01_load.t
 Makefile.PL
+META.yml                                 Module meta-data (added by MakeMaker)
