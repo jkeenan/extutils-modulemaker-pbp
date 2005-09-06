@@ -185,6 +185,116 @@ WriteMakefile(
     return $text_of_Makefile;
 }
 
+=head3 C<text_README()>
+
+  Usage     : $self->text_README() within complete_build()
+  Purpose   : Build README
+  Returns   : String holding text of README
+  Argument  : n/a
+  Throws    : n/a
+  Comment   : This method is a likely candidate for alteration in a subclass
+
+=cut
+
+sub text_README {
+    my $self = shift;
+#    my %README_text = (
+#        eumm_instructions => <<'END_OF_MAKE',
+#    perl Makefile.PL
+#    make
+#    make test
+#    make install
+#END_OF_MAKE
+#        mb_instructions => <<'END_OF_BUILD',
+#    perl Build.PL
+#    ./Build
+#    ./Build test
+#    ./Build install
+#END_OF_BUILD
+#        readme_top => <<'END_OF_TOP',
+#
+#If this is still here it means the programmer was too lazy to create the readme file.
+#
+#You can create it now by using the command shown above from this directory.
+#
+#At the very least you should be able to use this set of instructions
+#to install the module...
+#
+#END_OF_TOP
+#        readme_bottom => <<'END_OF_BOTTOM',
+#
+#If you are on a windows box you should use 'nmake' rather than 'make'.
+#END_OF_BOTTOM
+#    );
+#
+#    my $pod2textline = "pod2text $self->{NAME}.pm > README\n";
+#    my $build_instructions =
+#        ( $self->{BUILD_SYSTEM} eq 'ExtUtils::MakeMaker' )
+#            ? $README_text{eumm_instructions}
+#            : $README_text{mb_instructions};
+#    return $pod2textline . 
+#        $README_text{readme_top} .
+#        $build_instructions .
+#        $README_text{readme_bottom};
+
+    my $makemaker_instructions => <<'END_OF_MAKE',
+    perl Makefile.PL
+    make
+    make test
+    make install
+END_OF_MAKE
+
+    my $mb_instructions => <<'END_OF_BUILD',
+    perl Build.PL
+    ./Build
+    ./Build test
+    ./Build install
+END_OF_BUILD
+
+    my $README_text = <<"END_OF_README";
+$self->{NAME} version $self->{VERSION}
+
+[ REPLACE THIS...
+
+  The README is used to introduce the module and provide instructions on
+  how to install the module, any machine dependencies it may have (for
+  example C compilers and installed libraries) and any other information
+  that should be understood before the module is installed.
+
+  A README file is required for CPAN modules since CPAN extracts the
+  README file from a module distribution so that people browsing the
+  archive can use it get an idea of the modules uses. It is usually a
+  good idea to provide version information here so that people can
+  decide whether fixes for the module are worth downloading.
+]
+
+
+INSTALLATION
+
+To install this module, run the following commands:
+
+$makemaker_instructions
+
+Alternatively, to install with Module::Build, you can use the following commands:
+
+$mb_instructions
+
+
+DEPENDENCIES
+
+None.
+
+
+COPYRIGHT AND LICENSE
+
+Copyright (C) $self->{CopyrightYear}, $self->{AUTHOR}
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+END_OF_README
+    return $README_text;
+}
+
 
 #=head3 C<create_base_directory>
 #
@@ -276,59 +386,6 @@ WriteMakefile(
 #}
 #
 #=head2 Methods Called within C<complete_build()> as an Argument to C<print_file()>
-#
-#=head3 C<text_README()>
-#
-#  Usage     : $self->text_README() within complete_build()
-#  Purpose   : Build README
-#  Returns   : String holding text of README
-#  Argument  : n/a
-#  Throws    : n/a
-#  Comment   : This method is a likely candidate for alteration in a subclass
-#
-#=cut
-#
-#sub text_README {
-#    my $self = shift;
-#    my %README_text = (
-#        eumm_instructions => <<'END_OF_MAKE',
-#perl Makefile.PL
-#make
-#make test
-#make install
-#END_OF_MAKE
-#        mb_instructions => <<'END_OF_BUILD',
-#perl Build.PL
-#./Build
-#./Build test
-#./Build install
-#END_OF_BUILD
-#        readme_top => <<'END_OF_TOP',
-#
-#If this is still here it means the programmer was too lazy to create the readme file.
-#
-#You can create it now by using the command shown above from this directory.
-#
-#At the very least you should be able to use this set of instructions
-#to install the module...
-#
-#END_OF_TOP
-#        readme_bottom => <<'END_OF_BOTTOM',
-#
-#If you are on a windows box you should use 'nmake' rather than 'make'.
-#END_OF_BOTTOM
-#    );
-#
-#    my $pod2textline = "pod2text $self->{NAME}.pm > README\n";
-#    my $build_instructions =
-#        ( $self->{BUILD_SYSTEM} eq 'ExtUtils::MakeMaker' )
-#            ? $README_text{eumm_instructions}
-#            : $README_text{mb_instructions};
-#    return $pod2textline . 
-#        $README_text{readme_top} .
-#        $build_instructions .
-#        $README_text{readme_bottom};
-#}
 #
 #=head3 C<text_Todo()>
 #
