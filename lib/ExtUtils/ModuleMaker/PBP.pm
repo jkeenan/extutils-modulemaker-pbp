@@ -283,144 +283,222 @@ END_OF_README
             $README_bottom;
 }
 
+=head3 C<compose_pm_file()>
 
-#=head3 C<create_base_directory>
-#
-#  Usage     : $self->create_base_directory within complete_build()
-#  Purpose   : Create the directory where all the files will be created.
-#  Returns   : $DIR = directory name where the files will live
-#  Argument  : n/a
-#  Comment   : $self keys Base_Dir, COMPACT, NAME.  Calls method check_dir.
-#
-#=cut
-#
-#sub create_base_directory {
-#    my $self = shift;
-#
-#    $self->{Base_Dir} =
-#      join( ( $self->{COMPACT} ) ? q{-} : q{/}, split( /::/, $self->{NAME} ) );
-#
-#    $self->check_dir( $self->{Base_Dir} );
-#}
-#
-#=head3 C<check_dir()>
-#
-#  Usage     : check_dir( [ I<list of directories to be built> ] )
-#              in complete_build; create_base_directory; create_pm_basics 
-#  Purpose   : Creates directory(ies) requested.
-#  Returns   : n/a
-#  Argument  : Reference to an array holding list of directories to be created.
-#  Comment   : Essentially a wrapper around File::Path::mkpath.  Will use
-#              values in $self keys VERBOSE and PERMISSIONS to provide 
-#              2nd and 3rd arguments to mkpath if requested.
-#  Comment   : Adds to death message in event of failure.
-#
-#=cut
-#
-#sub check_dir {
-#    my $self = shift;
-#
-#    return mkpath( \@_, $self->{VERBOSE}, $self->{PERMISSIONS} );
-#    $self->death_message( [ "Can't create a directory: $!" ] );
-#}
-#
-#=head3 C<print_file()>
-#
-#  Usage     : $self->print_file($filename, $filetext) within generate_pm_file()
-#  Purpose   : Adds the file being created to MANIFEST, then prints text to new
-#              file.  Logs file creation under verbose.  Adds info for
-#              death_message in event of failure. 
-#  Returns   : n/a
-#  Argument  : 2 arguments: filename and text to be printed
-#  Comment   : 
-#
-#=cut
-#
-#sub print_file {
-#    my ( $self, $filename, $filetext ) = @_;
-#
-#    push( @{ $self->{MANIFEST} }, $filename )
-#      unless ( $filename eq 'MANIFEST' );
-##    $self->log_message("writing file '$filename'");
-#    $self->log_message( qq{writing file '$filename'});
-#
-#    local *FILE;
-#    open( FILE, ">$self->{Base_Dir}/$filename" )
-#      or $self->death_message( [ qq{Could not write '$filename', $!} ] );
-#    print FILE $filetext;
-#    close FILE;
-#}
-#
-#=head3 C<generate_pm_file>
-#
-#  Usage     : $self->generate_pm_file($module) within complete_build()
-#  Purpose   : Create a pm file out of assembled components
-#  Returns   : n/a
-#  Argument  : $module: pointer to the module being built
-#              (as there can be more than one module built by EU::MM);
-#              for the primary module it is a pointer to $self
-#  Comment   : 3 components:  create_pm_basics; compose_pm_file; print_file
-#
-#=cut
-#
-#sub generate_pm_file {
-#    my ( $self, $module ) = @_;
-#
-#    $self->create_pm_basics($module);
-#
-#    my $text_of_pm_file = $self->compose_pm_file($module);
-#
-#    $self->print_file( $module->{FILE}, $text_of_pm_file );
-#}
-#
-#=head2 Methods Called within C<complete_build()> as an Argument to C<print_file()>
-#
-#=head3 C<text_Todo()>
-#
-#  Usage     : $self->text_Todo() within complete_build()
-#  Purpose   : Composes text for Todo file
-#  Returns   : String with text of Todo file
-#  Argument  : n/a
-#  Throws    : n/a
-#  Comment   : This method is a likely candidate for alteration in a subclass
-#  Comment   : References $self key NAME
-#
-#=cut
-#
-#sub text_Todo {
-#    my $self = shift;
-#
-#    my $text = <<EOF;
-#TODO list for Perl module $self->{NAME}
-#
-#- Nothing yet
-#
-#
-#EOF
-#
-#    return $text;
-#}
-#
-#=head3 C<text_test()>
-#
-#  Usage     : $self->text_test within complete_build($testnum, $module)
-#  Purpose   : Composes text for a test for each pm file being requested in
-#              call to EU::MM
-#  Returns   : String holding complete text for a test file.
-#  Argument  : Two arguments: $testnum and $module
-#  Throws    : n/a
-#  Comment   : This method is a likely candidate for alteration in a subclass
-#              Will make a test with or without a checking for method new.
-#
-#=cut
-#
+  Usage     : $self->compose_pm_file($module) within generate_pm_file()
+  Purpose   : Composes a string holding all elements for a pm file
+  Returns   : String holding text for a pm file
+  Argument  : $module: pointer to the module being built
+              (as there can be more than one module built by EU::MM);
+              for the primary module it is a pointer to $self
+  Comment   : [Method name is inaccurate; it's not building a 'page' but
+              rather the text for a pm file.
+
+=cut
+
+sub compose_pm_file {
+    my $self = shift;
+    my $module = shift;
+      
+    my $rt_name = $self->{NAME};
+    $rt_name =~ s{::}{-}g;
+
+    my $text_of_pm_file = <<"END_OF_PM_FILE";
+package $self->{NAME};
+
+use version; \$VERSION = qv('0.0.1');
+
+use warnings;
+use strict;
+use Carp;
+
+# Other recommended modules (uncomment to use):
+#  use IO::Prompt;
+#  use Perl6::Export;
+#  use Perl6::Slurp;
+#  use Perl6::Say;
+#  use Regexp::Autoflags;
+
+
+# Module implementation here
+
+
+1; # Magic true value required at end of module
+__END__
+
+ ====head1 NAME
+
+$self->{NAME} - [One line description of module's purpose here]
+
+
+ ====head1 VERSION
+
+This document describes $self->{NAME} version 0.0.1
+
+
+ ====head1 SYNOPSIS
+
+    use $self->{NAME};
+
+ ====for author_to_fill_in
+    Brief code example(s) here showing commonest usage(s).
+    This section will be as far as many users bother reading
+    so make it as educational and exeplary as possible.
+
+ ====head1 DESCRIPTION
+
+ ====for author_to_fill_in
+    Write a full description of the module and its features here.
+    Use subsections (=head2, =head3) as appropriate.
+
+
+ ====head1 INTERFACE 
+
+ ====for author_to_fill_in
+    Write a separate section listing the public components of the modules
+    interface. These normally consist of either subroutines that may be
+    exported, or methods that may be called on objects belonging to the
+    classes provided by the module.
+
+
+ ====head1 DIAGNOSTICS
+
+ ====for author_to_fill_in
+    List every single error and warning message that the module can
+    generate (even the ones that will ''never happen''), with a full
+    explanation of each problem, one or more likely causes, and any
+    suggested remedies.
+
+ ====over
+
+ ====item C<< Error message here, perhaps with \%s placeholders >>
+
+[Description of error here]
+
+ ====item C<< Another error message here >>
+
+[Description of error here]
+
+[Et cetera, et cetera]
+
+ ====back
+
+
+ ====head1 CONFIGURATION AND ENVIRONMENT
+
+ ====for author_to_fill_in
+    A full explanation of any configuration system(s) used by the
+    module, including the names and locations of any configuration
+    files, and the meaning of any environment variables or properties
+    that can be set. These descriptions must also include details of any
+    configuration language used.
+
+$self->{NAME} requires no configuration files or environment variables.
+
+
+ ====head1 DEPENDENCIES
+
+ ====for author_to_fill_in
+    A list of all the other modules that this module relies upon,
+    including any restrictions on versions, and an indication whether
+    the module is part of the standard Perl distribution, part of the
+    module's distribution, or must be installed separately. ]
+
+None.
+
+
+ ====head1 INCOMPATIBILITIES
+
+ ====for author_to_fill_in
+    A list of any modules that this module cannot be used in conjunction
+    with. This may be due to name conflicts in the interface, or
+    competition for system or program resources, or due to internal
+    limitations of Perl (for example, many modules that use source code
+    filters are mutually incompatible).
+
+None reported.
+
+
+ ====head1 BUGS AND LIMITATIONS
+
+ ====for author_to_fill_in
+    A list of known problems with the module, together with some
+    indication Whether they are likely to be fixed in an upcoming
+    release. Also a list of restrictions on the features the module
+    does provide: data types that cannot be handled, performance issues
+    and the circumstances in which they may arise, practical
+    limitations on the size of data sets, special cases that are not
+    (yet) handled, etc.
+
+No bugs have been reported.
+
+Please report any bugs or feature requests to
+C<bug-$rt_name\@rt.cpan.org>, or through the web interface at
+L<http://rt.cpan.org>.
+
+
+ ====head1 AUTHOR
+
+$self->{AUTHOR}  C<< $self->{EMAIL} >>
+
+
+ ====head1 LICENSE AND COPYRIGHT
+
+Copyright (c) $self->{COPYRIGHT_YEAR}, $self->{AUTHOR} C<< $self->{EMAIL} >>.
+All rights reserved.
+
+This module is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself. See C<perldoc perlartistic>.
+
+
+ ====head1 DISCLAIMER OF WARRANTY
+
+BECAUSE THIS SOFTWARE IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
+FOR THE SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN
+OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
+PROVIDE THE SOFTWARE ''AS IS'' WITHOUT WARRANTY OF ANY KIND, EITHER
+EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE
+ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE IS WITH
+YOU. SHOULD THE SOFTWARE PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
+NECESSARY SERVICING, REPAIR, OR CORRECTION.
+
+IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
+WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
+REDISTRIBUTE THE SOFTWARE AS PERMITTED BY THE ABOVE LICENCE, BE
+LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL,
+OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE
+THE SOFTWARE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
+RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
+FAILURE OF THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
+SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGES.
+END_OF_PM_FILE
+
+    $text_of_pm_file =~ s/\n ====/\n=/g;
+    return ($module, $text_of_pm_file);
+}
+
+=head3 C<text_test()>
+
+  Usage     : $self->text_test within complete_build($testnum, $module)
+  Purpose   : Composes text for a test for each pm file being requested in
+              call to EU::MM
+  Returns   : String holding complete text for a test file.
+  Argument  : Two arguments: $testnum and $module
+  Throws    : n/a
+  Comment   : This method is a likely candidate for alteration in a subclass
+              Will make a test with or without a checking for method new.
+
+=cut
+
 #sub text_test {
 #    my ( $self, $testnum, $module ) = @_;
+#    my $text_of_test_file;
 #
 #    my $name    = $self->module_value( $module, 'NAME' );
 #    my $neednew = $self->module_value( $module, 'NEED_NEW_METHOD' );
 #
-#    my $text_of_test_file;
 #    if ($neednew) {
 #        my $name = $module->{NAME};
 #
@@ -455,498 +533,25 @@ END_OF_README
 #EOF
 #
 #    }
-#
-#    return $text_of_test_file;
-#}
-#
-#=head3 C<text_proxy_makefile()>
-#
-#  Usage     : $self->text_proxy_makefile() within complete_build()
-#  Purpose   : Composes text for proxy makefile
-#  Returns   : String holding text for proxy makefile
-#  Argument  : n/a
-#  Throws    : n/a
-#  Comment   : This method is a likely candidate for alteration in a subclass
-#
-#=cut
-#
-#sub text_proxy_makefile {
-#    my $self = shift;
-#
-#    # This comes directly from the docs for Module::Build::Compat
-#    my $text_of_proxy = <<'EOF';
-#unless (eval "use Module::Build::Compat 0.02; 1" ) {
-#  print "This module requires Module::Build to install itself.\n";
-#
-#  require ExtUtils::MakeMaker;
-#  my $yn = ExtUtils::MakeMaker::prompt
-#    ('  Install Module::Build from CPAN?', 'y');
-#
-#  if ($yn =~ /^y/i) {
-#    require Cwd;
-#    require File::Spec;
-#    require CPAN;
-#
-#    # Save this 'cause CPAN will chdir all over the place.
-#    my $cwd = Cwd::cwd();
-#    my $makefile = File::Spec->rel2abs($0);
-#
-#    CPAN::Shell->install('Module::Build::Compat');
-#
-#    chdir $cwd or die "Cannot chdir() back to $cwd: $!";
-#    exec $^X, $makefile, @ARGV;  # Redo now that we have Module::Build
-#  } else {
-#    warn " *** Cannot install without Module::Build.  Exiting ...\n";
-#    exit 1;
-#  }
-#}
-#Module::Build::Compat->run_build_pl(args => \@ARGV);
-#Module::Build::Compat->write_makefile();
-#EOF
-#
-#    return $text_of_proxy;
-#}
-#
-#
-#=head2 Methods Called within C<generate_pm_file()>
-#
-#=head3 C<create_pm_basics>
-#
-#  Usage     : $self->create_pm_basics($module) within generate_pm_file()
-#  Purpose   : Conducts check on directory 
-#  Returns   : For a given pm file, sets the FILE key: directory/file 
-#  Argument  : $module: pointer to the module being built
-#              (as there can be more than one module built by EU::MM);
-#              for the primary module it is a pointer to $self
-#  Comment   : References $self keys NAME, Base_Dir, and FILE.  
-#              Calls method check_dir.
-#
-#=cut
-#
-#sub create_pm_basics {
-#    my ( $self, $module ) = @_;
-#    my @layers = split( /::/, $module->{NAME} );
-#    my $file   = pop(@layers);
-#    my $dir    = join( '/', 'lib', @layers );
-#
-#    $self->check_dir("$self->{Base_Dir}/$dir");
-#    $module->{FILE} = "$dir/$file.pm";
-#}
-#
-#=head3 C<compose_pm_file()>
-#
-#  Usage     : $self->compose_pm_file($module) within generate_pm_file()
-#  Purpose   : Composes a string holding all elements for a pm file
-#  Returns   : String holding text for a pm file
-#  Argument  : $module: pointer to the module being built
-#              (as there can be more than one module built by EU::MM);
-#              for the primary module it is a pointer to $self
-#  Comment   : [Method name is inaccurate; it's not building a 'page' but
-#              rather the text for a pm file.
-#
-#=cut
-#
-#sub compose_pm_file {
-#    my $self = shift;
-#    my $module = shift;
-#      
-#    my $text_of_pm_file = $self->block_begin($module);
-#
-#    $text_of_pm_file .= (
-#         (
-#            (
-#                 ( $self->module_value( $module, 'NEED_POD' ) )
-#              && ( $self->module_value( $module, 'NEED_NEW_METHOD' ) )
-#            )
-#            ? $self->block_subroutine_header($module)
-#         : q{}
-#     )
-#    );
-#
-#    $text_of_pm_file .= (
-#        ( $self->module_value( $module, 'NEED_NEW_METHOD' ) )
-#        ? $self->block_new_method()
-#        : q{}
-#    );
-#
-#    $text_of_pm_file .= (
-#         ( $self->module_value( $module, 'NEED_POD' ) )
-#         ? $self->block_pod($module)
-#         : q{}
-#    );
-#
-#    $text_of_pm_file .= $self->block_final_one();
-#    return ($module, $text_of_pm_file);
-#}
-#
-#
-#=head2 Methods Called within C<compose_pm_file()>
-#
-#=head3 C<block_begin()>
-#
-#  Usage     : $self->block_begin($module) within compose_pm_file()
-#  Purpose   : Composes the standard code for top of a Perl pm file
-#  Returns   : String holding code for top of pm file
-#  Argument  : $module: pointer to the module being built
-#              (as there can be more than one module built by EU::MM);
-#              for the primary module it is a pointer to $self
-#  Throws    : n/a
-#  Comment   : This method is a likely candidate for alteration in a subclass,
-#              e.g., you don't need Exporter-related code if you're building 
-#              an OO-module.
-#  Comment   : References $self keys NAME and (indirectly) VERSION
-#
-#=cut
-#
-#sub block_begin {
-#    my ( $self, $module ) = @_;
-#    my $version = $self->module_value( $module, 'VERSION' );
-#    my $package_line  = "package $module->{NAME};\n";
-#    my $strict_line   = "use strict;\n";
-#    my $warnings_line = "use warnings;\n";  # not included in standard version
-#    my $begin_block   = <<"END_OF_BEGIN";
+
+#    $text_of_test_file = <<"END_LOAD";
+#use Test::More tests => $nmodules;
 #
 #BEGIN {
-#    use Exporter ();
-#    use vars qw(\$VERSION \@ISA \@EXPORT \@EXPORT_OK \%EXPORT_TAGS);
-#    \$VERSION     = '$version';
-#    \@ISA         = qw(Exporter);
-#    #Give a hoot don't pollute, do not export more than needed by default
-#    \@EXPORT      = qw();
-#    \@EXPORT_OK   = qw();
-#    \%EXPORT_TAGS = ();
+#$use_lines
 #}
 #
-#END_OF_BEGIN
-#    my $text = 
-#        $package_line . 
-#        $strict_line . 
-#        # $warnings_line . 
-#        $begin_block;
-#    return $text;
+#diag( "Testing $main_module \$${main_module}::VERSION" );
+#END_LOAD
+#    return $text_of_test_file;
 #}
-#
-#=head3 C<module_value()>
-#
-#  Usage     : $self->module_value($module, @keys) 
-#              within block_begin(), text_test(),
-#              compose_pm_file(),  block_pod()
-#  Purpose   : When writing POD sections, you have to 'escape' 
-#              the POD markers to prevent the compiler from treating 
-#              them as real POD.  This method 'unescapes' them and puts header
-#              and closer around individual POD headings within pm file.
-#  Arguments : First is pointer to module being formed.  Second is an array
-#              whose members are the section(s) of the POD being written. 
-#  Comment   : [The method's name is very opaque and not self-documenting.
-#              Function of the code is not easily evident.  Rename?  Refactor?]
-#
-#=cut
-#
-#sub module_value {
-#    my ( $self, $module, @keys ) = @_;
-#
-#    if ( scalar(@keys) == 1 ) {
-#        return ( $module->{ $keys[0] } )
-#          if ( exists( ( $module->{ $keys[0] } ) ) );
-#        return ( $self->{ $keys[0] } );
-#    }
-#    else { # only alternative currently possible is @keys == 2
-#        return ( $module->{ $keys[0] }{ $keys[1] } )
-#          if ( exists( ( $module->{ $keys[0] }{ $keys[1] } ) ) );
-#        return ( $self->{ $keys[0] }{ $keys[1] } );
-#    }
-#}
-#
-#=head3 C<block_pod()>
-#
-#  Usage     : $self->block_pod($module) inside compose_pm_file()
-#  Purpose   : Compose the main POD section within a pm file
-#  Returns   : String holding main POD section
-#  Argument  : $module: pointer to the module being built
-#              (as there can be more than one module built by EU::MM);
-#              for the primary module it is a pointer to $self
-#  Throws    : n/a
-#  Comment   : This method is a likely candidate for alteration in a subclass
-#  Comment   : In StandardText formulation, contains the following components:
-#              warning about stub documentation needing editing
-#              pod wrapper top
-#              NAME - ABSTRACT
-#              SYNOPSIS
-#              DESCRIPTION
-#              USAGE
-#              BUGS
-#              SUPPORT
-#              HISTORY (as requested)
-#              AUTHOR
-#              COPYRIGHT
-#              SEE ALSO
-#              pod wrapper bottom
-#
-#=cut
-#
-#sub block_pod {
-#    my ( $self, $module ) = @_;
-#
-#    my $name             = $self->module_value( $module, 'NAME' );
-#    my $abstract         = $self->module_value( $module, 'ABSTRACT' );
-#    my $synopsis         = qq{  use $name;\n  blah blah blah\n};
-#    my $description      = <<END_OF_DESC;
-#Stub documentation for this module was created by ExtUtils::ModuleMaker.
-#It looks like the author of the extension was negligent enough
-#to leave the stub unedited.
-#
-#Blah blah blah.
-#END_OF_DESC
-#    my $author_composite = $self->module_value( $module, 'COMPOSITE' );
-#    my $copyright        = $self->module_value( $module, 'LicenseParts', 'COPYRIGHT');
-#    my $see_also         = q{perl(1).};
-#
-#    my $text_of_pod = join(
-#        q{},
-#        $self->pod_section( NAME => $name . 
-#            ( (defined $abstract) ? qq{ - $abstract} : q{} )
-#        ),
-#        $self->pod_section( SYNOPSIS    => $synopsis ),
-#        $self->pod_section( DESCRIPTION => $description ),
-#        $self->pod_section( USAGE       => q{} ),
-#        $self->pod_section( BUGS        => q{} ),
-#        $self->pod_section( SUPPORT     => q{} ),
-#        (
-#            ( $self->{CHANGES_IN_POD} )
-#            ? $self->pod_section(
-#                HISTORY => $self->text_Changes('only pod')
-#              )
-#            : q{}
-#        ),
-#        $self->pod_section( AUTHOR     => $author_composite),
-#        $self->pod_section( COPYRIGHT  => $copyright),
-#        $self->pod_section( 'SEE ALSO' => $see_also),
-#    );
-#
-#    return $self->pod_wrapper($text_of_pod);
-#}
-#
-#=head3 C<block_subroutine_header()>
-#
-#  Usage     : $self->block_subroutine_header($module) within compose_pm_file()
-#  Purpose   : Composes an inline comment for pm file (much like this inline
-#              comment) which documents purpose of a subroutine
-#  Returns   : String containing text for inline comment
-#  Argument  : $module: pointer to the module being built
-#              (as there can be more than one module built by EU::MM);
-#              for the primary module it is a pointer to $self
-#  Throws    : n/a
-#  Comment   : This method is a likely candidate for alteration in a subclass
-#              E.g., some may prefer this info to appear in POD rather than
-#              inline comments.
-#
-#=cut
-#
-#sub block_subroutine_header {
-#    my ( $self, $module ) = @_;
-#    my $text_of_subroutine_pod = <<EOFBLOCK;
-#
-##################### subroutine header begin ####################
-#
-# ====head2 sample_function
-#
-# Usage     : How to use this function/method
-# Purpose   : What it does
-# Returns   : What it returns
-# Argument  : What it wants to know
-# Throws    : Exceptions and other anomolies
-# Comment   : This is a sample subroutine header.
-#           : It is polite to include more pod and fewer comments.
-#
-#See Also   : 
-#
-# ====cut
-#
-##################### subroutine header end ####################
-#
-#EOFBLOCK
-#
-#    $text_of_subroutine_pod =~ s/\n ====/\n=/g;
-#    return $text_of_subroutine_pod;
-#}
-#
-#=head3 C<block_new_method()>
-#
-#  Usage     : $self->block_new_method() within compose_pm_file()
-#  Purpose   : Build 'new()' method as part of a pm file
-#  Returns   : String holding sub new.
-#  Argument  : $module: pointer to the module being built
-#              (as there can be more than one module built by EU::MM);
-#              for the primary module it is a pointer to $self
-#  Throws    : n/a
-#  Comment   : This method is a likely candidate for alteration in a subclass,
-#              e.g., pass a single hash-ref to new() instead of a list of
-#              parameters.
-#
-#=cut
-#
-#sub block_new_method {
-#    my $self = shift;
-#    return <<'EOFBLOCK';
-#
-#sub new
-#{
-#    my ($class, %parameters) = @_;
-#
-#    my $self = bless ({}, ref ($class) || $class);
-#
-#    return $self;
-#}
-#
-#EOFBLOCK
-#}
-#
-#=head3 C<block_final_one()>
-#
-#  Usage     : $self->block_final_one() within compose_pm_file()
-#  Purpose   : Compose code and comment that conclude a pm file and guarantee
-#              that the module returns a true value
-#  Returns   : String containing code and comment concluding a pm file
-#  Argument  : $module: pointer to the module being built
-#              (as there can be more than one module built by EU::MM);
-#              for the primary module it is a pointer to $self
-#  Throws    : n/a
-#  Comment   : This method is a likely candidate for alteration in a subclass,
-#              e.g., some may not want the comment line included.
-#
-#=cut
-#
-#sub block_final_one {
-#    my $self = shift;
-#    return <<EOFBLOCK;
-#
-#1;
-## The preceding line will help the module return a true value
-#
-#EOFBLOCK
-#}
-#
-#=head2 All Other Methods
-#
-#=head3 C<death_message()>
-#
-#  Usage     : $self->death_message( [ I<list of error messages> ] ) 
-#              in validate_values; check_dir; print_file
-#  Purpose   : Croaks with error message composed from elements in the list
-#              passed by reference as argument
-#  Returns   : [ To come. ]
-#  Argument  : Reference to an array holding list of error messages accumulated
-#  Comment   : Different functioning in modulemaker interactive mode
-#
-#=cut
-#
-#sub death_message {
-#    my $self = shift;
-#    my $errorref = shift;
-#    my @errors = @{$errorref};
-#
-#    croak( join "\n", @errors, q{}, $self->{USAGE_MESSAGE} )
-#      unless $self->{INTERACTIVE};
-#    my %err = map {$_, 1} @errors;
-#    delete $err{'NAME is required'} if $err{'NAME is required'};
-#    @errors = keys %err;
-#    if (@errors) {
-#        print( join "\n", 
-#            'Oops, there are the following errors:', @errors, q{} );
-#        return 1;
-#    } else {
-#        return;
-#    }
-#}
-#
-#=head3 C<log_message()>
-#
-#  Usage     : $self->log_message( $message ) in print_file; 
-#  Purpose   : Prints log_message (currently, to STDOUT) if $self->{VERBOSE}
-#  Returns   : n/a
-#  Argument  : Scalar holding message to be logged
-#  Comment   : 
-#
-#=cut
-#
-#sub log_message {
-#    my ( $self, $message ) = @_;
-#    print "$message\n" if $self->{VERBOSE};
-#}
-#
-#=head3 C<pod_section()>
-#
-#  Usage     : $self->pod_section($heading, $content) within 
-#              block_pod()
-#  Purpose   : When writing POD sections, you have to 'escape' 
-#              the POD markers to prevent the compiler from treating 
-#              them as real POD.  This method 'unescapes' them and puts header
-#              and closer around individual POD headings within pm file.
-#  Arguments : Variables holding POD section name and text of POD section.
-#
-#=cut
-#
-#sub pod_section {
-#    my ( $self, $heading, $content ) = @_;
-#    my $text_of_pod_section = <<END_OF_SECTION;
-#
-# ====head1 $heading
-#
-#$content
-#END_OF_SECTION
-#
-#    $text_of_pod_section =~ s/\n ====/\n=/g;
-#    return $text_of_pod_section;
-#}
-#
-#=head3 C<pod_wrapper()>
-#
-#  Usage     : $self->pod_wrapper($string) within block_pod()
-#  Purpose   : When writing POD sections, you have to 'escape' 
-#              the POD markers to prevent the compiler from treating 
-#              them as real POD.  This method 'unescapes' them and puts header
-#              and closer around main POD block in pm file, along with warning
-#              about stub documentation.
-#  Argument  : String holding text of POD which has been built up 
-#              within block_pod().
-#  Comment   : $head and $tail inside pod_wrapper() are optional and, in a 
-#              subclass, could be redefined as empty strings;
-#              but $cutline is mandatory as it supplies the last =cut
-#
-#=cut
-#
-#sub pod_wrapper {
-#    my ( $self, $podtext ) = @_;
-#    my $head = <<'END_OF_HEAD';
-#
-##################### main pod documentation begin ###################
-### Below is the stub of documentation for your module. 
-### You better edit it!
-#
-#END_OF_HEAD
-#    my $cutline = <<'END_OF_CUT';
-#
-# ====cut
-#
-#END_OF_CUT
-#    my $tail = <<'END_OF_TAIL';
-##################### main pod documentation end ###################
-#
-#END_OF_TAIL
-#
-#    $cutline =~ s/\n ====/\n=/g;
-#    return join( q{}, 
-#        $head,     # optional
-#        $podtext,  # required 
-#        $cutline,  # required 
-#        $tail      # optional
-#    );
-#
 
 =head1 PREREQUISITES
 
-ExtUtils::ModuleMaker, version 0.39 or later.
+ExtUtils::ModuleMaker, version 0.40 or later.
 L<http://search.cpan.org/dist/ExtUtils-ModuleMaker/>.
+
+=cut
 
 1;
 # The preceding line will help the module return a true value
