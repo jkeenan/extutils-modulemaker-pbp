@@ -2,18 +2,18 @@ package ExtUtils::ModuleMaker::PBP;
 use strict;
 use warnings;
 our ( $VERSION );
-$VERSION = '0.01';
+$VERSION = '0.02';
 use base qw( ExtUtils::ModuleMaker );
-use ExtUtils::ModuleMaker::Licenses::Standard qw(
-    Get_Standard_License
-    Verify_Standard_License
-);
-use ExtUtils::ModuleMaker::Licenses::Local qw(
-    Get_Local_License
-    Verify_Local_License
-);
-use File::Path;
-use Carp;
+#use ExtUtils::ModuleMaker::Licenses::Standard qw(
+#    Get_Standard_License
+#    Verify_Standard_License
+#);
+#use ExtUtils::ModuleMaker::Licenses::Local qw(
+#    Get_Local_License
+#    Verify_Local_License
+#);
+#use File::Path;
+#use Carp;
 
 =head1 NAME
 
@@ -45,8 +45,8 @@ ExtUtils::ModuleMaker::PBP - Create a Perl extension in the style of Damian Conw
 
 =head1 VERSION
 
-This document references version 0.01 of ExtUtils::ModuleMaker::PBP, released
-to CPAN on September 5, 2005.
+This document references version 0.02 of ExtUtils::ModuleMaker::PBP, released
+to CPAN on September 8, 2005.
 
 =head1 DESCRIPTION
 
@@ -73,6 +73,10 @@ sub default_values {
     my $self = shift;
     my $defaults_ref = $self->SUPER::default_values();
     $defaults_ref->{COMPACT} = 1;
+    $defaults_ref->{EXTRA_MODULES_SINGLE_TEST_FILE} = 1;
+    $defaults_ref->{FIRST_TEST_NUMBER}  = 0;
+    $defaults_ref->{TEST_NUMBER_FORMAT} = "%02d";
+    $defaults_ref->{TEST_NAME}          = '_load.t';
     return $defaults_ref;;
 }
 
@@ -118,7 +122,6 @@ my \$builder = Module::Build->new(
 END_OF_BUILDFILE
     return $text_of_Buildfile;
 }
-# add-to-cleanup      => [ '${self->{NAME}}-*' ],
 
 =head3 C<text_Changes()>
 
@@ -491,60 +494,6 @@ END_OF_PM_FILE
               Will make a test with or without a checking for method new.
 
 =cut
-
-#sub text_test {
-#    my ( $self, $testnum, $module ) = @_;
-#    my $text_of_test_file;
-#
-#    my $name    = $self->module_value( $module, 'NAME' );
-#    my $neednew = $self->module_value( $module, 'NEED_NEW_METHOD' );
-#
-#    if ($neednew) {
-#        my $name = $module->{NAME};
-#
-#        $text_of_test_file = <<EOF;
-## -*- perl -*-
-#
-## $testnum - check module loading and create testing directory
-#
-#use Test::More tests => 2;
-#
-#BEGIN { use_ok( '$name' ); }
-#
-#my \$object = ${name}->new ();
-#isa_ok (\$object, '$name');
-#
-#
-#EOF
-#
-#    }
-#    else {
-#
-#        $text_of_test_file = <<EOF;
-## -*- perl -*-
-#
-## $testnum - check module loading and create testing directory
-#
-#use Test::More tests => 1;
-#
-#BEGIN { use_ok( '$name' ); }
-#
-#
-#EOF
-#
-#    }
-
-#    $text_of_test_file = <<"END_LOAD";
-#use Test::More tests => $nmodules;
-#
-#BEGIN {
-#$use_lines
-#}
-#
-#diag( "Testing $main_module \$${main_module}::VERSION" );
-#END_LOAD
-#    return $text_of_test_file;
-#}
 
 =head1 PREREQUISITES
 
