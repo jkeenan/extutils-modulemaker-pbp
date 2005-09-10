@@ -2,18 +2,8 @@ package ExtUtils::ModuleMaker::PBP;
 use strict;
 use warnings;
 our ( $VERSION );
-$VERSION = '0.02';
+$VERSION = '0.02_01';
 use base qw( ExtUtils::ModuleMaker );
-#use ExtUtils::ModuleMaker::Licenses::Standard qw(
-#    Get_Standard_License
-#    Verify_Standard_License
-#);
-#use ExtUtils::ModuleMaker::Licenses::Local qw(
-#    Get_Local_License
-#    Verify_Local_License
-#);
-#use File::Path;
-#use Carp;
 
 =head1 NAME
 
@@ -45,27 +35,57 @@ ExtUtils::ModuleMaker::PBP - Create a Perl extension in the style of Damian Conw
 
 =head1 VERSION
 
-This document references version 0.02 of ExtUtils::ModuleMaker::PBP, released
+This document references version 0.02_01 of ExtUtils::ModuleMaker::PBP, released
 to CPAN on September 8, 2005.
 
 =head1 DESCRIPTION
 
 ExtUtils::ModuleMaker::PBP subclasses Perl extension ExtUtils::ModuleMaker.
 If you are not already familiar with ExtUtils::ModuleMaker, you should read
-its documentation I<now>.
+its documentation I<now>.  The documentation provided below is intended
+primarily for future maintainers and extenders of ExtUtils::ModuleMaker::PBP.
 
-The methods described below supersede the similarly named methods in
-ExtUtils::ModuleMaker::StandardText.pm.  When used as described herein, they
-will create a CPAN-ready Perl distribution the content of whose files reflects
-programming practices recommended by Damian Conway in his book I<Perl Best
-Practices> (O'Reilly, 2005) L<http://www.oreilly.com/catalog/perlbp/>.
+The default value settings and methods described below supersede the 
+similarly named methods in ExtUtils::ModuleMaker.  When used as described 
+herein, they will create a CPAN-ready Perl distribution the content of 
+whose files reflects programming practices recommended by Damian Conway in 
+his book I<Perl Best Practices> (O'Reilly, 2005) 
+L<http://www.oreilly.com/catalog/perlbp/>.
 
 =head1 DEFAULT VALUES
 
-The following default value(s) for ExtUtils::ModuleMaker::PBP differs from
-that of ExtUtils::ModuleMaker:
+The following default values for ExtUtils::ModuleMaker::PBP differ from
+those set in F<ExtUtils/ModuleMaker/Defaults.pm>.
 
-    $self->{COMPACT} = 1;  # default to compact top directory
+=over 4
+
+=item *
+
+Default to compact top directory.  E.g., F<Alpha-Beta-Gamma> instead of 
+F<Alpha/Beta/Gamma>.
+
+    $self->{COMPACT} = 1;
+
+=item *
+
+Default to placing C<use_ok> tests for multiple modules in a single F<t/*.t> 
+file rather than one F<t*.t> file for each module.
+
+    $self->{EXTRA_MODULES_SINGLE_TEST_FILE} = 1;
+
+=item *
+
+Count of F<t/*.t> files begins at 0 rather than 1.
+
+    $self->{FIRST_TEST_NUMBER}  = 0;
+
+=item *
+
+In name of test file, test number is formatted as 2-digit rather than 3-digit.
+
+    $self->{TEST_NUMBER_FORMAT} = "%02d";
+
+=back
 
 =cut
 
@@ -76,7 +96,6 @@ sub default_values {
     $defaults_ref->{EXTRA_MODULES_SINGLE_TEST_FILE} = 1;
     $defaults_ref->{FIRST_TEST_NUMBER}  = 0;
     $defaults_ref->{TEST_NUMBER_FORMAT} = "%02d";
-    $defaults_ref->{TEST_NAME}          = '_load.t';
     return $defaults_ref;;
 }
 
@@ -91,9 +110,8 @@ sub default_values {
   Returns   : String holding text for Buildfile
   Argument  : n/a
   Throws    : n/a
-  Comment   : This method is a likely candidate for alteration in a subclass,
-              e.g., respond to improvements in Module::Build
-  Comment   : References $self keys NAME and LICENSE
+  Comment   : References EU::MM object attributes 
+              NAME, LICENSE, AUTHOR, EMAIL and FILE
 
 =cut
 
@@ -132,8 +150,8 @@ END_OF_BUILDFILE
   Argument  : $only_in_pod:  True value to get only a HISTORY section for POD
                              False value to get whole Changes file
   Throws    : n/a
-  Comment   : This method is a likely candidate for alteration in a subclass
-  Comment   : Accesses $self keys NAME, VERSION, timestamp, eumm_version
+  Comment   : Accesses EU::MM object attributes 
+              NAME, VERSION, timestamp, eumm_version
 
 =cut
 
@@ -168,7 +186,8 @@ EOF
   Returns   : String holding text of Makefile
   Argument  : n/a
   Throws    : n/a
-  Comment   : This method is a likely candidate for alteration in a subclass
+  Comment   : References EU::MM object attributes 
+              NAME, AUTHOR, EMAIL and FILE
 
 =cut
 
@@ -211,7 +230,8 @@ WriteMakefile(
   Returns   : String holding text of README
   Argument  : n/a
   Throws    : n/a
-  Comment   : This method is a likely candidate for alteration in a subclass
+  Comment   : References EU::MM object attributes 
+              NAME, VERSION, COPYRIGHT_YEAR and AUTHOR
 
 =cut
 
@@ -290,12 +310,12 @@ END_OF_README
 
   Usage     : $self->compose_pm_file($module) within generate_pm_file()
   Purpose   : Composes a string holding all elements for a pm file
-  Returns   : String holding text for a pm file
+  Returns   : String holding text for a *.pm file
   Argument  : $module: pointer to the module being built
               (as there can be more than one module built by EU::MM);
               for the primary module it is a pointer to $self
-  Comment   : [Method name is inaccurate; it's not building a 'page' but
-              rather the text for a pm file.
+  Comment   : References EU::MM object attributes 
+              NAME, AUTHOR, EMAIL and COPYRIGHT_YEAR
 
 =cut
 
@@ -482,23 +502,68 @@ END_OF_PM_FILE
     return ($module, $text_of_pm_file);
 }
 
-=head3 C<text_test()>
-
-  Usage     : $self->text_test within complete_build($testnum, $module)
-  Purpose   : Composes text for a test for each pm file being requested in
-              call to EU::MM
-  Returns   : String holding complete text for a test file.
-  Argument  : Two arguments: $testnum and $module
-  Throws    : n/a
-  Comment   : This method is a likely candidate for alteration in a subclass
-              Will make a test with or without a checking for method new.
-
-=cut
-
 =head1 PREREQUISITES
 
 ExtUtils::ModuleMaker, version 0.40 or later.
 L<http://search.cpan.org/dist/ExtUtils-ModuleMaker/>.
+
+=head1 TO DO
+
+ExtUtils::ModuleMaker::PBP is currently supported only when called within a
+Perl script.  In an upcoming version, the F<modulemaker> utility will be
+adapted to work with this extension, probably by providing a similarly
+functioning but differently named command-line utility.
+
+=head1 INCOMPATIBILITIES
+
+None reported.
+
+=head1 BUGS AND LIMITATIONS
+
+No bugs have been reported.
+
+Please report any bugs or feature requests to
+C<bug-ExtUtils-ModuleMaker-PBP@rt.cpan.org>, or through the web interface at
+L<http://rt.cpan.org>.
+
+
+=head1 AUTHOR
+
+James E Keenan:  jkeenan [at] cpan [dot] org
+
+=head1 LICENSE AND COPYRIGHT
+
+Standard text of files created by ExtUtils::ModuleMaker::PBP copyright (c)
+2005 Damian Conway.  Adapted from Module::Starter::PBP and used by permission.
+Code building these files copyright (c) 2005 James E Keenan.  
+All rights reserved.
+
+This module is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself. See C<perldoc perlartistic>.
+
+
+=head1 DISCLAIMER OF WARRANTY
+
+BECAUSE THIS SOFTWARE IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
+FOR THE SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN
+OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
+PROVIDE THE SOFTWARE ''AS IS'' WITHOUT WARRANTY OF ANY KIND, EITHER
+EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE
+ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE IS WITH
+YOU. SHOULD THE SOFTWARE PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
+NECESSARY SERVICING, REPAIR, OR CORRECTION.
+
+IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
+WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
+REDISTRIBUTE THE SOFTWARE AS PERMITTED BY THE ABOVE LICENCE, BE
+LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL,
+OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE
+THE SOFTWARE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
+RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
+FAILURE OF THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
+SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGES.
 
 =cut
 

@@ -1,8 +1,13 @@
 TODO list for Perl module ExtUtils::ModuleMaker::PBP
 
 - Implement 'use version' style for $self->{VERSION}, e.g., in Changes.
-- Module::Starter::PBP uses 2-digit test numbers beginning with 00.
+- Module::Starter::PBP uses 2-digit test numbers beginning with 00. DONE:
+  Implemented in EU::MM 0.39_02 (Fri 09/09/2005)
 - Module::Starter::PBP defaults to compact top-level directory;  EU::MM does
   not.  Have to fix.  DONE:  Tue Sep  6 19:12:25 EDT 2005
+- t/testlib/Auxiliary.pm will have to be moved under eumm/lib so that (a) it
+  gets installed with eumm and (b) other modules (i.e., subclasses such as
+EU::MM::PBP) can import Auxiliary.pm's functions into the subclasses' test
+suite.
 
 
