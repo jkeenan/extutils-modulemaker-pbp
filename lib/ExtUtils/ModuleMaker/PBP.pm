@@ -93,9 +93,10 @@ sub default_values {
     my $self = shift;
     my $defaults_ref = $self->SUPER::default_values();
     $defaults_ref->{COMPACT} = 1;
-    $defaults_ref->{EXTRA_MODULES_SINGLE_TEST_FILE} = 1;
     $defaults_ref->{FIRST_TEST_NUMBER}  = 0;
     $defaults_ref->{TEST_NUMBER_FORMAT} = "%02d";
+    $defaults_ref->{EXTRA_MODULES_SINGLE_TEST_FILE} = 1;
+    $defaults_ref->{TEST_NAME_SEPARATOR} = q{.};
     $defaults_ref->{INCLUDE_TODO} = 0;
     return $defaults_ref;;
 }
