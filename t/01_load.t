@@ -2,8 +2,8 @@
 use strict;
 use warnings;
 use Test::More 
-# tests => 2;
-qw(no_plan);
+tests => 11;
+# qw(no_plan);
 use_ok( 'ExtUtils::ModuleMaker' );
 use_ok( 'ExtUtils::ModuleMaker::PBP' );
 use_ok( 'ExtUtils::ModuleMaker::Utility', qw|
