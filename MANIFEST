@@ -1,9 +1,23 @@
-MANIFEST
-LICENSE
-README
-Todo
 Changes
 lib/ExtUtils/ModuleMaker/PBP.pm
-t/01_load.t
+LICENSE
 Makefile.PL
+MANIFEST
+README
+Todo
+t/01_load.t
+t/02_bad_constructor.t
+t/03_quick.t
+t/04_compact.t
+t/05_abstract.t
+t/06_build.t
+t/07_proxy.t
+# t/08_mmkr.t
+t/09_miscargs.t
+t/10_standard_text.t
+t/testlib/IO/Capture.pm
+t/testlib/IO/Capture/ErrorMessages.pm
+t/testlib/IO/Capture/Stderr.pm
+t/testlib/IO/Capture/Stdout.pm
+t/testlib/IO/Capture/Tie_STDx.pm
 META.yml                                 Module meta-data (added by MakeMaker)
