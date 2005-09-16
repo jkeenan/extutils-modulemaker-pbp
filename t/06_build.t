@@ -47,10 +47,9 @@ SKIP: {
     my $testmod = 'Gamma';
 
     ok( 
-        $mod = ExtUtils::ModuleMaker->new( 
+        $mod = ExtUtils::ModuleMaker::PBP->new( 
             NAME           => "Alpha::$testmod",
             ABSTRACT       => 'Test of the capacities of EU::MM',
-            COMPACT        => 1,
             CHANGES_IN_POD => 1,
             BUILD_SYSTEM   => 'Module::Build',
             AUTHOR         => 'Phineas T. Bluster',
@@ -59,7 +58,7 @@ SKIP: {
             WEBSITE        => 'http://www.anonymous.com/~phineas',
             EMAIL          => 'phineas@anonymous.com',
         ),
-        "call ExtUtils::ModuleMaker->new for Alpha-$testmod"
+        "call ExtUtils::ModuleMaker::PBP->new for Alpha-$testmod"
     );
 
     ok( $mod->complete_build(), 'call complete_build()' );
@@ -70,7 +69,7 @@ SKIP: {
     ok($filetext = read_file_string('Build.PL'),
         'Able to read Build.PL');
 
-    six_file_tests(7, $testmod); # first arg is # entries in MANIFEST
+    six_file_tests(8, $testmod); # first arg is # entries in MANIFEST
 
     _reprocess_personal_defaults_file($pers_def_ref);
 

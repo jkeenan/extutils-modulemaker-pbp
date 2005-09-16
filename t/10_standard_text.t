@@ -51,11 +51,10 @@ SKIP: {
 
         $testmod = 'Beta';
         
-        ok( $mod = ExtUtils::ModuleMaker->new( 
+        ok( $mod = ExtUtils::ModuleMaker::PBP->new( 
                 NAME           => "Alpha::$testmod",
-                COMPACT        => 1,
             ),
-            "call ExtUtils::ModuleMaker->new for Alpha-$testmod"
+            "call ExtUtils::ModuleMaker::PBP->new for Alpha-$testmod"
         );
         
         ok( $mod->complete_build(), 'call complete_build()' );
@@ -64,14 +63,18 @@ SKIP: {
         ok( chdir "Alpha-$testmod", "cd Alpha-$testmod" );
         ok( -d, "directory $_ exists" ) for ( qw/lib scripts t/);
         ok( -f, "file $_ exists" )
-            for ( qw/Changes LICENSE Makefile.PL MANIFEST README Todo/);
+            for ( qw/Changes LICENSE Makefile.PL MANIFEST README/);
+        ok(! -f 'Todo', "Todo correctly not created");
         ok( -f, "file $_ exists" )
-            for ( "lib/Alpha/${testmod}.pm", "t/001_load.t" );
+            for ( "lib/Alpha/${testmod}.pm", "t/00.load.t" );
         
         ok($filetext = read_file_string('Makefile.PL'),
             'Able to read Makefile.PL');
         ok(@pmfilelines = read_file_array("lib/Alpha/${testmod}.pm"),
             'Able to read module into array');
+
+TODO: { local $TODO = 'These tests need to be rewritten to reflect the copy
+that is expected in the files built in the PBP style.';
 
         # test of main pod wrapper
         is( (grep {/^#{20} main pod documentation (begin|end)/} @pmfilelines), 2, 
@@ -119,6 +122,7 @@ SKIP: {
         is( (grep {/^If you are on a windows box/} @readmelines),
             1,
             "README has correct bottom part");
+} # END TODO BLOCK
 
         _reprocess_personal_defaults_file($pers_def_ref);
 

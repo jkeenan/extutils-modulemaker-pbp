@@ -2,7 +2,7 @@
 use strict;
 local $^W = 1;
 use Test::More 
-tests =>  36;
+tests =>  35;
 # qw(no_plan);
 use_ok( 'ExtUtils::ModuleMaker::PBP' );
 use_ok( 'Cwd');
@@ -23,7 +23,7 @@ my $odir = cwd();
 SKIP: {
     eval { require 5.006_001 };
     skip "tests require File::Temp, core with Perl 5.6", 
-        (36 - 4) if $@;
+        (35 - 4) if $@;
     use warnings;
     use_ok( 'File::Temp', qw| tempdir |);
     use ExtUtils::ModuleMaker::Auxiliary qw(
@@ -48,10 +48,9 @@ SKIP: {
     my $testmod = 'Beta';
 
     ok( 
-        $mod = ExtUtils::ModuleMaker->new( 
+        $mod = ExtUtils::ModuleMaker::PBP->new( 
             NAME           => "Alpha::$testmod",
             ABSTRACT       => 'Test of the capacities of EU::MM',
-            COMPACT        => 1,
             CHANGES_IN_POD => 1,
             AUTHOR         => 'Phineas T. Bluster',
             CPANID         => 'PTBLUSTER',
@@ -59,16 +58,17 @@ SKIP: {
             WEBSITE        => 'http://www.anonymous.com/~phineas',
             EMAIL          => 'phineas@anonymous.com',
         ),
-        "call ExtUtils::ModuleMaker->new for Alpha-$testmod"
+        "call ExtUtils::ModuleMaker::PBP->new for Alpha-$testmod"
     );
 
     ok( $mod->complete_build(), 'call complete_build()' );
 
     ok( chdir "Alpha-$testmod", "cd Alpha-$testmod" );
 
-    for ( qw/LICENSE Makefile.PL MANIFEST README Todo/) {
+    for ( qw/ LICENSE Makefile.PL MANIFEST README /) {
         ok( -f, "file $_ exists" );
     }
+    ok(! -f 'Todo', 'Todo file correctly not created');
     ok(! -f 'Changes', 'Changes file correctly not created');
     for ( qw/lib scripts t/) {
         ok( -d, "directory $_ exists" );
@@ -79,12 +79,10 @@ SKIP: {
         'Able to read Makefile.PL');
     ok($filetext =~ m|AUTHOR\s+=>\s+.Phineas\sT.\sBluster|,
         'Makefile.PL contains correct author');
-    ok($filetext =~ m|AUTHOR.*\(phineas\@anonymous\.com\)|,
+    ok($filetext =~ m|AUTHOR.*<phineas\@anonymous\.com>|,
         'Makefile.PL contains correct e-mail');
-    ok($filetext =~ m|ABSTRACT\s+=>\s+'Test\sof\sthe\scapacities\sof\sEU::MM'|,
-        'Makefile.PL contains correct abstract');
 
-    six_file_tests(7, $testmod); # first arg is # entries in MANIFEST
+    six_file_tests(8, $testmod); # first arg is # entries in MANIFEST
 
     _reprocess_personal_defaults_file($pers_def_ref);
 

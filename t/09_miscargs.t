@@ -3,7 +3,7 @@
 use strict;
 local $^W = 1;
 use Test::More 
-tests =>  260;
+tests =>  178;
 # qw(no_plan);
 use_ok( 'ExtUtils::ModuleMaker::PBP' );
 use_ok( 'Cwd');
@@ -24,7 +24,7 @@ use_ok( 'ExtUtils::ModuleMaker::Auxiliary', qw(
 SKIP: {
     eval { require 5.006_001 };
     skip "tests require File::Temp, core with 5.6", 
-        (260 - 4) if $@;
+        (178 - 4) if $@;
     use warnings;
     use_ok( 'File::Temp', qw| tempdir |);
     use ExtUtils::ModuleMaker::Auxiliary qw(
@@ -56,12 +56,11 @@ SKIP: {
 
         $testmod = 'Beta';
         
-        ok( $mod = ExtUtils::ModuleMaker->new( 
+        ok( $mod = ExtUtils::ModuleMaker::PBP->new( 
                 NAME           => "Alpha::$testmod",
-                COMPACT        => 1,
                 VERBOSE        => 1,
             ),
-            "call ExtUtils::ModuleMaker->new for Alpha-$testmod"
+            "call ExtUtils::ModuleMaker::PBP->new for Alpha-$testmod"
         );
         
         my ($capture, %count);
@@ -74,15 +73,16 @@ SKIP: {
             $count{'writing'}++ if $l =~ /^writing file/;
         }
         is($count{'mkdir'}, 5, "correct no. of directories created announced verbosely");
-        is($count{'writing'}, 8, "correct no. of files created announced verbosely");
+        is($count{'writing'}, 9, "correct no. of files created announced verbosely");
 
         ok( -d qq{Alpha-$testmod}, "compact top-level directory exists" );
         ok( chdir "Alpha-$testmod", "cd Alpha-$testmod" );
         ok( -d, "directory $_ exists" ) for ( qw/lib scripts t/);
         ok( -f, "file $_ exists" )
-            for ( qw/Changes LICENSE Makefile.PL MANIFEST README Todo/);
+            for ( qw/Changes LICENSE Makefile.PL MANIFEST README/);
+        ok(! -f 'Todo', "Todo file correctly not created");
         ok( -f, "file $_ exists" )
-            for ( "lib/Alpha/${testmod}.pm", "t/001_load.t" );
+            for ( "lib/Alpha/${testmod}.pm", "t/00.load.t" );
         
         ok($filetext = read_file_string('Makefile.PL'),
             'Able to read Makefile.PL');
@@ -110,12 +110,12 @@ SKIP: {
 
         $testmod = 'Gamma';
         
-        ok( $mod = ExtUtils::ModuleMaker->new( 
+        ok( $mod = ExtUtils::ModuleMaker::PBP->new( 
                 NAME           => "Alpha::$testmod",
                 COMPACT        => 0,
                 VERBOSE        => 1,
             ),
-            "call ExtUtils::ModuleMaker->new for Alpha-$testmod"
+            "call ExtUtils::ModuleMaker::PBP->new for Alpha-$testmod"
         );
         
         my ($capture, %count);
@@ -128,15 +128,16 @@ SKIP: {
             $count{'writing'}++ if $l =~ /^writing file/;
         }
         is($count{'mkdir'}, 6, "correct no. of directories created announced verbosely");
-        is($count{'writing'}, 8, "correct no. of files created announced verbosely");
+        is($count{'writing'}, 9, "correct no. of files created announced verbosely");
 
         ok( -d qq{Alpha/$testmod}, "non-compact top-level directories exist" );
         ok( chdir "Alpha/$testmod", "cd Alpha/$testmod" );
         ok( -d, "directory $_ exists" ) for ( qw/lib lib\/Alpha scripts t/);
         ok( -f, "file $_ exists" )
-            for ( qw/Changes LICENSE Makefile.PL MANIFEST README Todo/);
+            for ( qw/Changes LICENSE Makefile.PL MANIFEST README/);
+        ok(! -f 'Todo', "Todo file correctly not created");
         ok( -f, "file $_ exists" )
-            for ( "lib/Alpha/${testmod}.pm", "t/001_load.t" );
+            for ( "lib/Alpha/${testmod}.pm", "t/00.load.t" );
         
         ok($filetext = read_file_string('Makefile.PL'),
             'Able to read Makefile.PL');
@@ -165,13 +166,13 @@ SKIP: {
         ok(chdir $tdir, 'changed to temp directory for testing');
         $testmod = 'Tau';
         
-        ok( $mod = ExtUtils::ModuleMaker->new( 
+        ok( $mod = ExtUtils::ModuleMaker::PBP->new( 
                 NAME           => "Alpha::$testmod",
                 COMPACT        => 0,
                 VERBOSE        => 1,
                 ABSTRACT       => "Tau's the time for Perl",
             ),
-            "call ExtUtils::ModuleMaker->new for Alpha-$testmod"
+            "call ExtUtils::ModuleMaker::PBP->new for Alpha-$testmod"
         );
         
         my $dump;
@@ -208,12 +209,12 @@ SKIP: {
 
         $testmod = 'Rho';
         
-        ok( $mod = ExtUtils::ModuleMaker->new( 
+        ok( $mod = ExtUtils::ModuleMaker::PBP->new( 
                 NAME           => "Alpha::$testmod",
                 COMPACT        => 0,
                 VERBOSE        => 1,
             ),
-            "call ExtUtils::ModuleMaker->new for Alpha-$testmod"
+            "call ExtUtils::ModuleMaker::PBP->new for Alpha-$testmod"
         );
         
         my $dump;
@@ -237,151 +238,10 @@ SKIP: {
     }
 
     ##### Sets 5 & 6 & 7:  Tests of NEED_POD and NEED_NEW_METHOD options #####
+    # Note:  Skipped because EU::MM::PBP pretty much hard-codes the .pm file
+    # and makes no reference one way or the other to these methods.  So their
+    # default values are irrelevant;  POD, for one thing, is always generated.
 
-    {
-        $tdir = tempdir( CLEANUP => 1);
-        ok(chdir $tdir, 'changed to temp directory for testing');
-
-        my $mmkr_dir_ref = _preexists_mmkr_directory();
-        my $mmkr_dir = _make_mmkr_directory($mmkr_dir_ref);
-        ok( $mmkr_dir, "personal defaults directory now present on system");
-
-        my $pers_file = "ExtUtils/ModuleMaker/Personal/Defaults.pm";
-        my $pers_def_ref = 
-            _process_personal_defaults_file( $mmkr_dir, $pers_file );
-
-        $testmod = 'Phi';
-        
-        ok( $mod = ExtUtils::ModuleMaker->new( 
-                NAME           => "Alpha::$testmod",
-                COMPACT        => 1,
-                NEED_POD       => 0,
-            ),
-            "call ExtUtils::ModuleMaker->new for Alpha-$testmod"
-        );
-        
-        ok( $mod->complete_build(), 'call complete_build()' );
-
-        ok( -d qq{Alpha-$testmod}, "compact top-level directory exists" );
-        ok( chdir "Alpha-$testmod", "cd Alpha-$testmod" );
-        ok( -d, "directory $_ exists" ) for ( qw/lib scripts t/);
-        ok( -f, "file $_ exists" )
-            for ( qw/Changes LICENSE Makefile.PL MANIFEST README Todo/);
-        ok( -f, "file $_ exists" )
-            for ( "lib/Alpha/${testmod}.pm", "t/001_load.t" );
-        
-        ok($filetext = read_file_string('Makefile.PL'),
-            'Able to read Makefile.PL');
-        ok(@filelines = read_file_array("lib/Alpha/${testmod}.pm"),
-            'Able to read module into array');
-        is( (grep {/^=(head|cut)/} @filelines), 0, 
-            "no POD correctly detected in module");
-
-        _reprocess_personal_defaults_file($pers_def_ref);
-
-        ok(chdir $odir, 'changed back to original directory after testing');
-
-        ok( _restore_mmkr_dir_status($mmkr_dir_ref),
-            "original presence/absence of .modulemaker directory restored");
-
-    }
-        
-    {
-        $tdir = tempdir( CLEANUP => 1);
-        ok(chdir $tdir, 'changed to temp directory for testing');
-
-        my $mmkr_dir_ref = _preexists_mmkr_directory();
-        my $mmkr_dir = _make_mmkr_directory($mmkr_dir_ref);
-        ok( $mmkr_dir, "personal defaults directory now present on system");
-
-        my $pers_file = "ExtUtils/ModuleMaker/Personal/Defaults.pm";
-        my $pers_def_ref = 
-            _process_personal_defaults_file( $mmkr_dir, $pers_file );
-
-        $testmod = 'Chi';
-        
-        ok( $mod = ExtUtils::ModuleMaker->new( 
-                NAME            => "Alpha::$testmod",
-                COMPACT         => 1,
-                NEED_NEW_METHOD => 0,
-            ),
-            "call ExtUtils::ModuleMaker->new for Alpha-$testmod"
-        );
-        
-        ok( $mod->complete_build(), 'call complete_build()' );
-
-        ok( -d qq{Alpha-$testmod}, "compact top-level directory exists" );
-        ok( chdir "Alpha-$testmod", "cd Alpha-$testmod" );
-        ok( -d, "directory $_ exists" ) for ( qw/lib scripts t/);
-        ok( -f, "file $_ exists" )
-            for ( qw/Changes LICENSE Makefile.PL MANIFEST README Todo/);
-        ok( -f, "file $_ exists" )
-            for ( "lib/Alpha/${testmod}.pm", "t/001_load.t" );
-        
-        ok($filetext = read_file_string('Makefile.PL'),
-            'Able to read Makefile.PL');
-        ok(@filelines = read_file_array("lib/Alpha/${testmod}.pm"),
-            'Able to read module into array');
-        is( (grep {/^sub new/} @filelines), 0, 
-            "no sub new() correctly detected in module");
-
-        _reprocess_personal_defaults_file($pers_def_ref);
-
-        ok(chdir $odir, 'changed back to original directory after testing');
-
-        ok( _restore_mmkr_dir_status($mmkr_dir_ref),
-            "original presence/absence of .modulemaker directory restored");
-
-    }
-        
-    {
-        $tdir = tempdir( CLEANUP => 1);
-        ok(chdir $tdir, 'changed to temp directory for testing');
-
-        my $mmkr_dir_ref = _preexists_mmkr_directory();
-        my $mmkr_dir = _make_mmkr_directory($mmkr_dir_ref);
-        ok( $mmkr_dir, "personal defaults directory now present on system");
-
-        my $pers_file = "ExtUtils/ModuleMaker/Personal/Defaults.pm";
-        my $pers_def_ref = 
-            _process_personal_defaults_file( $mmkr_dir, $pers_file );
-
-        $testmod = 'Xi';
-        
-        ok( $mod = ExtUtils::ModuleMaker->new( 
-                NAME            => "Alpha::$testmod",
-                COMPACT         => 1,
-                NEED_POD        => 0,
-                NEED_NEW_METHOD => 0,
-            ),
-            "call ExtUtils::ModuleMaker->new for Alpha-$testmod"
-        );
-        
-        ok( $mod->complete_build(), 'call complete_build()' );
-
-        ok( -d qq{Alpha-$testmod}, "compact top-level directory exists" );
-        ok( chdir "Alpha-$testmod", "cd Alpha-$testmod" );
-        ok( -d, "directory $_ exists" ) for ( qw/lib scripts t/);
-        ok( -f, "file $_ exists" )
-            for ( qw/Changes LICENSE Makefile.PL MANIFEST README Todo/);
-        ok( -f, "file $_ exists" )
-            for ( "lib/Alpha/${testmod}.pm", "t/001_load.t" );
-        
-        ok($filetext = read_file_string('Makefile.PL'),
-            'Able to read Makefile.PL');
-        ok(@filelines = read_file_array("lib/Alpha/${testmod}.pm"),
-            'Able to read module into array');
-        is( (grep {/^(sub new|=(head|cut))/} @filelines), 0, 
-            "no sub new() or POD correctly detected in module");
-
-        _reprocess_personal_defaults_file($pers_def_ref);
-
-        ok(chdir $odir, 'changed back to original directory after testing');
-
-        ok( _restore_mmkr_dir_status($mmkr_dir_ref),
-            "original presence/absence of .modulemaker directory restored");
-
-    }
         
     ######### Set #8:  Test of EXTRA_MODULES Option ##########
      
@@ -399,16 +259,15 @@ SKIP: {
 
         $testmod = 'Sigma';
         
-        ok( $mod = ExtUtils::ModuleMaker->new( 
+        ok( $mod = ExtUtils::ModuleMaker::PBP->new( 
                 NAME           => "Alpha::$testmod",
-                COMPACT        => 1,
                 EXTRA_MODULES  => [
                     { NAME => "Alpha::${testmod}::Gamma" },
                     { NAME => "Alpha::${testmod}::Delta" },
                     { NAME => "Alpha::${testmod}::Gamma::Epsilon" },
                 ],
             ),
-            "call ExtUtils::ModuleMaker->new for Alpha-$testmod"
+            "call ExtUtils::ModuleMaker::PBP->new for Alpha-$testmod"
         );
         
         ok( $mod->complete_build(), 'call complete_build()' );
@@ -417,7 +276,8 @@ SKIP: {
         ok( chdir "Alpha-$testmod", "cd Alpha-$testmod" );
         ok( -d, "directory $_ exists" ) for ( qw/lib scripts t/);
         ok( -f, "file $_ exists" )
-            for ( qw/Changes LICENSE Makefile.PL MANIFEST README Todo/);
+            for ( qw/Changes LICENSE Makefile.PL MANIFEST README/);
+        ok(! -f 'Todo', "Todo file correctly not created");
         ok( -d, "directory $_ exists" ) for (
                 "lib/Alpha",
                 "lib/Alpha/${testmod}",
@@ -429,10 +289,9 @@ SKIP: {
                 "lib/Alpha/${testmod}/Gamma.pm",
                 "lib/Alpha/${testmod}/Delta.pm",
                 "lib/Alpha/${testmod}/Gamma/Epsilon.pm",
-                't/001_load.t',
-                't/002_load.t',
-                't/003_load.t',
-                't/004_load.t',
+                't/00.load.t',
+                't/pod-coverage.t',
+                't/pod.t',
             );
         
         _reprocess_personal_defaults_file($pers_def_ref);
@@ -462,12 +321,11 @@ SKIP: {
 
         $testmod = 'Beta';
         
-        ok( $mod = ExtUtils::ModuleMaker->new( 
+        ok( $mod = ExtUtils::ModuleMaker::PBP->new( 
                 NAME           => "Alpha::$testmod",
-                COMPACT        => 1,
                 VERSION        => q{0.3},
             ),
-            "call ExtUtils::ModuleMaker->new for Alpha-$testmod"
+            "call ExtUtils::ModuleMaker::PBP->new for Alpha-$testmod"
         );
         
         ok( $mod->complete_build(), 'call complete_build()' );
@@ -476,13 +334,14 @@ SKIP: {
         ok( chdir "Alpha-$testmod", "cd Alpha-$testmod" );
         ok( -d, "directory $_ exists" ) for ( qw/lib scripts t/);
         ok( -f, "file $_ exists" )
-            for ( qw/Changes LICENSE Makefile.PL MANIFEST README Todo/);
+            for ( qw/Changes LICENSE Makefile.PL MANIFEST README/);
+        ok(! -f 'Todo', "Todo file correctly not created");
         ok( -f, "file $_ exists" )
-            for ( "lib/Alpha/${testmod}.pm", "t/001_load.t" );
+            for ( "lib/Alpha/${testmod}.pm", "t/00.load.t" );
         
         ok($filetext = read_file_string("lib/Alpha/$testmod.pm"),
             "Able to read lib/Alpha/$testmod.pm");
-        like($filetext, qr/\$VERSION\s+=\s+'0\.3'/,
+        like($filetext, qr/\$VERSION.+?'0\.3'/,
             "VERSION number is correct and properly quoted");
         
         _reprocess_personal_defaults_file($pers_def_ref);
@@ -511,9 +370,8 @@ SKIP: {
 
         $testmod = 'Sigma';
         
-        ok( $mod = ExtUtils::ModuleMaker->new( 
+        ok( $mod = ExtUtils::ModuleMaker::PBP->new( 
                 NAME           => "Alpha::$testmod",
-                COMPACT        => 1,
                 EXTRA_MODULES  => [
                     { NAME => "Alpha::${testmod}::Gamma" },
                     { NAME => "Alpha::${testmod}::Delta" },
@@ -521,7 +379,7 @@ SKIP: {
                 ],
                 EXTRA_MODULES_SINGLE_TEST_FILE => 1,
             ),
-            "call ExtUtils::ModuleMaker->new for Alpha-$testmod"
+            "call ExtUtils::ModuleMaker::PBP->new for Alpha-$testmod"
         );
         
         ok( $mod->complete_build(), 'call complete_build()' );
@@ -530,7 +388,8 @@ SKIP: {
         ok( chdir "Alpha-$testmod", "cd Alpha-$testmod" );
         ok( -d, "directory $_ exists" ) for ( qw/lib scripts t/);
         ok( -f, "file $_ exists" )
-            for ( qw/Changes LICENSE Makefile.PL MANIFEST README Todo/);
+            for ( qw/Changes LICENSE Makefile.PL MANIFEST README/);
+        ok(! -f 'Todo', "Todo file correctly not created");
         ok( -d, "directory $_ exists" ) for (
                 "lib/Alpha",
                 "lib/Alpha/${testmod}",
@@ -542,10 +401,10 @@ SKIP: {
                 "lib/Alpha/${testmod}/Gamma.pm",
                 "lib/Alpha/${testmod}/Delta.pm",
                 "lib/Alpha/${testmod}/Gamma/Epsilon.pm",
-                't/001_load.t',
+                't/00.load.t',
             );
         
-        my $filetext = read_file_string("t/001_load.t");
+        my $filetext = read_file_string("t/00.load.t");
         my $number_line = q{use Test::More tests => 4;};
         ok( (index($filetext, $number_line)) > -1, 
             "test file lists predicted number in plan");

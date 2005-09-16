@@ -41,15 +41,15 @@ SKIP: {
 
     my $mod;
 
-    ok($mod  = ExtUtils::ModuleMaker->new ( NAME => 'Sample::Module'),
-        "call ExtUtils::ModuleMaker->new for Sample-Module");
+    ok($mod  = ExtUtils::ModuleMaker::PBP->new ( NAME => 'Sample::Module'),
+        "call ExtUtils::ModuleMaker::PBP->new for Sample-Module");
         
     ok( $mod->complete_build(), 'call complete_build()' );
 
     ########################################################################
 
-    ok(chdir "Sample/Module",
-        "cd Sample/Module");
+    ok(chdir "Sample-Module",
+        "cd Sample-Module");
 
     for (qw/Changes MANIFEST Makefile.PL LICENSE
             README lib t/) {
@@ -79,16 +79,16 @@ SKIP: {
 
     my ($modparent, $modchild, $modgrandchild);
 
-    ok($modparent  = ExtUtils::ModuleMaker->new(
+    ok($modparent  = ExtUtils::ModuleMaker::PBP->new(
         NAME => 'Sample::Module',
         ABSTRACT => 'The quick brown fox'
-    ), "call ExtUtils::ModuleMaker->new for Sample-Module");
+    ), "call ExtUtils::ModuleMaker::PBP->new for Sample-Module");
     isa_ok($modparent, "ExtUtils::ModuleMaker", "object is an EU::MM object");
     is($modparent->{NAME}, 'Sample::Module', "NAME is correct");
     is($modparent->{ABSTRACT}, 'The quick brown fox', "ABSTRACT is correct");
 
     $modchild = $modparent->new(
-        'NAME'     => 'Alpha::Beta',
+        NAME     => 'Alpha::Beta',
         ABSTRACT => 'The quick brown fox'
     );
     isa_ok($modchild, "ExtUtils::ModuleMaker", "constructor is inheritable");
@@ -99,7 +99,7 @@ SKIP: {
     ok($modgrandchild  = $modchild->new(
         NAME => 'Gamma::Delta',
         ABSTRACT => 'The quick brown vixen'
-    ), "call ExtUtils::ModuleMaker->new for Sample-Module");
+    ), "call ExtUtils::ModuleMaker::PBP->new for Sample-Module");
     isa_ok($modgrandchild, "ExtUtils::ModuleMaker", "object is an EU::MM object");
     is($modgrandchild->{NAME}, 'Gamma::Delta', "NAME is correct");
     is($modgrandchild->{ABSTRACT}, 'The quick brown vixen', 

@@ -2,7 +2,7 @@ package ExtUtils::ModuleMaker::PBP;
 use strict;
 use warnings;
 our ( $VERSION );
-$VERSION = '0.02_01';
+$VERSION = '0.03';
 use base qw( ExtUtils::ModuleMaker );
 
 =head1 NAME
@@ -35,8 +35,8 @@ ExtUtils::ModuleMaker::PBP - Create a Perl extension in the style of Damian Conw
 
 =head1 VERSION
 
-This document references version 0.02_01 of ExtUtils::ModuleMaker::PBP, released
-to CPAN on September 8, 2005.
+This document references version 0.03 of ExtUtils::ModuleMaker::PBP, released
+to CPAN on September 11, 2005.
 
 =head1 DESCRIPTION
 
@@ -98,6 +98,8 @@ sub default_values {
     $defaults_ref->{EXTRA_MODULES_SINGLE_TEST_FILE} = 1;
     $defaults_ref->{TEST_NAME_SEPARATOR} = q{.};
     $defaults_ref->{INCLUDE_TODO} = 0;
+    $defaults_ref->{INCLUDE_POD_COVERAGE_TEST}  = 1;
+    $defaults_ref->{INCLUDE_POD_TEST}           = 1;
     return $defaults_ref;;
 }
 
@@ -308,9 +310,9 @@ END_OF_README
             $README_bottom;
 }
 
-=head3 C<compose_pm_file()>
+=head3 C<text_pm_file()>
 
-  Usage     : $self->compose_pm_file($module) within generate_pm_file()
+  Usage     : $self->text_pm_file($module) within generate_pm_file()
   Purpose   : Composes a string holding all elements for a pm file
   Returns   : String holding text for a *.pm file
   Argument  : $module: pointer to the module being built
@@ -321,7 +323,7 @@ END_OF_README
 
 =cut
 
-sub compose_pm_file {
+sub text_pm_file {
     my $self = shift;
     my $module = shift;
       
@@ -331,7 +333,7 @@ sub compose_pm_file {
     my $text_of_pm_file = <<"END_OF_PM_FILE";
 package $self->{NAME};
 
-use version; \$VERSION = qv('0.0.1');
+use version; \$VERSION = qv('$self->{VERSION}');
 
 use warnings;
 use strict;
@@ -349,7 +351,6 @@ use Carp;
 
 
 1; # Magic true value required at end of module
-__END__
 
  ====head1 NAME
 

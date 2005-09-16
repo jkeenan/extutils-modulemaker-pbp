@@ -49,10 +49,9 @@ SKIP: {
     ########## Variant:  'Module::Build and proxy Makefile.PL' ##########
 
     ok( 
-        $mod = ExtUtils::ModuleMaker->new(
+        $mod = ExtUtils::ModuleMaker::PBP->new(
             NAME           => "Alpha::$testmod",
             ABSTRACT       => 'Test of the capacities of EU::MM',
-            COMPACT        => 1,
             CHANGES_IN_POD => 1,
             BUILD_SYSTEM   => 'Module::Build and proxy Makefile.PL',
             AUTHOR         => 'Phineas T. Bluster',
@@ -61,16 +60,17 @@ SKIP: {
             WEBSITE        => 'http://www.anonymous.com/~phineas',
             EMAIL          => 'phineas@anonymous.com',
         ),
-        "call ExtUtils::ModuleMaker->new for Alpha-$testmod"
+        "call ExtUtils::ModuleMaker::PBP->new for Alpha-$testmod"
     );
 
     ok( $mod->complete_build(), 'call complete_build()' );
 
     ok( chdir "Alpha-$testmod", "cd Alpha-$testmod" );
 
-    for ( qw/Build.PL LICENSE Makefile.PL MANIFEST README Todo/) {
+    for ( qw/Build.PL LICENSE Makefile.PL MANIFEST README/) {
         ok( -f, "file $_ exists" );
     }
+    ok(! -f 'Todo', 'Todo file correctly not created');
     ok(! -f 'Changes', 'Changes file correctly not created');
     for ( qw/lib scripts t/) {
         ok( -d, "directory $_ exists" );
@@ -84,15 +84,14 @@ SKIP: {
     ok($filetext = read_file_string('Build.PL'),
         'Able to read Build.PL');
 
-    six_file_tests(8, $testmod); # first arg is # entries in MANIFEST
+    six_file_tests(9, $testmod); # first arg is # entries in MANIFEST
 
     ########## Variant:  'Module::Build and Proxy' ##########
 
     ok( 
-        $mod = ExtUtils::ModuleMaker->new(
+        $mod = ExtUtils::ModuleMaker::PBP->new(
             NAME           => "Alpha::$testmod",
             ABSTRACT       => 'Test of the capacities of EU::MM',
-            COMPACT        => 1,
             CHANGES_IN_POD => 1,
             BUILD_SYSTEM   => 'Module::Build and Proxy',
             AUTHOR         => 'Phineas T. Bluster',
@@ -101,16 +100,17 @@ SKIP: {
             WEBSITE        => 'http://www.anonymous.com/~phineas',
             EMAIL          => 'phineas@anonymous.com',
         ),
-        "call ExtUtils::ModuleMaker->new for Alpha-$testmod"
+        "call ExtUtils::ModuleMaker::PBP->new for Alpha-$testmod"
     );
 
     ok( $mod->complete_build(), 'call complete_build()' );
 
     ok( chdir "Alpha-$testmod", "cd Alpha-$testmod" );
 
-    for ( qw/Build.PL LICENSE Makefile.PL MANIFEST README Todo/) {
+    for ( qw/Build.PL LICENSE Makefile.PL MANIFEST README/) {
         ok( -f, "file $_ exists" );
     }
+    ok(! -f 'Todo', 'Todo file correctly not created');
     ok(! -f 'Changes', 'Changes file correctly not created');
     for ( qw/lib scripts t/) {
         ok( -d, "directory $_ exists" );
@@ -124,7 +124,7 @@ SKIP: {
     ok($filetext = read_file_string('Build.PL'),
         'Able to read Build.PL');
 
-    six_file_tests(8, $testmod); # first arg is # entries in MANIFEST
+    six_file_tests(9, $testmod); # first arg is # entries in MANIFEST
  
     _reprocess_personal_defaults_file($pers_def_ref);
 

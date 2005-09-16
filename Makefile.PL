@@ -10,6 +10,6 @@ WriteMakefile(
     ABSTRACT     => 'Create a Perl extension in the style of Damian Conway\'s Perl Best Practices',
     PREREQ_PM    => {
                      'Test::Simple'             => 0.44,
-                     'ExtUtils::ModuleMaker'    => 0.39,
+                     'ExtUtils::ModuleMaker'    => 0.39_06,
                     },
 );
