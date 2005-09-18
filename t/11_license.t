@@ -258,10 +258,12 @@ SKIP: {
 
         ok( -d qq{Alpha-$testmod}, "compact top-level directory exists" );
         ok( chdir "Alpha-$testmod", "cd Alpha-$testmod" );
-        ok( -d, "directory $_ exists" ) for ( qw/lib scripts t/);
+        ok(  -d, "directory $_ exists" ) for ( qw/lib t/);
+        ok(! -d, "directory $_ does not exist" ) for ( qw/scripts/);
         ok( -f, "file $_ exists" )
             for ( qw/ Changes LICENSE Makefile.PL MANIFEST README /);
         ok(! -f 'Todo', "Todo correctly not created as it is not default" );
+
         ok( -f, "file $_ exists" )
             for ( "lib/Alpha/${testmod}.pm", "t/00.load.t" );
         

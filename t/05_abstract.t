@@ -65,14 +65,11 @@ SKIP: {
 
     ok( chdir "Alpha-$testmod", "cd Alpha-$testmod" );
 
-    for ( qw/ LICENSE Makefile.PL MANIFEST README /) {
-        ok( -f, "file $_ exists" );
-    }
-    ok(! -f 'Todo', 'Todo file correctly not created');
-    ok(! -f 'Changes', 'Changes file correctly not created');
-    for ( qw/lib scripts t/) {
-        ok( -d, "directory $_ exists" );
-    }
+    ok(  -d, "directory $_ exists" ) for ( qw/lib t/);
+    ok(! -d, "directory $_ does not exist" ) for ( qw/scripts/);
+
+    ok(  -f $_, "file $_ exists") for (qw/LICENSE Makefile.PL MANIFEST README/);
+    ok(! -f $_, "$_ file correctly not created") for (qw/Todo Changes/);
 
     my ($filetext);
     ok($filetext = read_file_string('Makefile.PL'),

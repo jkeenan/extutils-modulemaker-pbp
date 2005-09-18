@@ -2,7 +2,7 @@ package ExtUtils::ModuleMaker::PBP;
 use strict;
 use warnings;
 our ( $VERSION );
-$VERSION = '0.03';
+$VERSION = '0.05';
 use base qw( ExtUtils::ModuleMaker );
 
 =head1 NAME
@@ -14,7 +14,7 @@ ExtUtils::ModuleMaker::PBP - Create a Perl extension in the style of Damian Conw
     use ExtUtils::ModuleMaker::PBP;
 
     $mod = ExtUtils::ModuleMaker::PBP->new(
-        NAME => 'Sample::Module' 
+        NAME => 'Sample::Module'
     );
 
     $mod->complete_build();
@@ -35,8 +35,8 @@ ExtUtils::ModuleMaker::PBP - Create a Perl extension in the style of Damian Conw
 
 =head1 VERSION
 
-This document references version 0.03 of ExtUtils::ModuleMaker::PBP, released
-to CPAN on September 11, 2005.
+This document references version 0.05 of ExtUtils::ModuleMaker::PBP, released
+to CPAN on September 17, 2005.
 
 =head1 DESCRIPTION
 
@@ -45,12 +45,25 @@ If you are not already familiar with ExtUtils::ModuleMaker, you should read
 its documentation I<now>.  The documentation provided below is intended
 primarily for future maintainers and extenders of ExtUtils::ModuleMaker::PBP.
 
-The default value settings and methods described below supersede the 
-similarly named methods in ExtUtils::ModuleMaker.  When used as described 
-herein, they will create a CPAN-ready Perl distribution the content of 
-whose files reflects programming practices recommended by Damian Conway in 
-his book I<Perl Best Practices> (O'Reilly, 2005) 
+The default value settings and methods described below supersede the
+similarly named methods in ExtUtils::ModuleMaker.  When used as described
+herein, they will create a CPAN-ready Perl distribution the content of
+whose files reflects programming practices recommended by Damian Conway in
+his book I<Perl Best Practices> (O'Reilly, 2005)
 L<http://www.oreilly.com/catalog/perlbp/>.
+
+=head1 USAGE
+
+The easiest way to get started with ExtUtils::ModuleMaker::PBP is to use the
+F<mmkrpbp> utility included in this distribution.  F<mmkrpbp> is basically a
+clone of the F<modulemaker> utility included with F<ExtUtils::ModuleMaker>.
+To get started with F<mmkrpbp>, simply go to the command-prompt and enter:
+
+    %    mmkrpbp
+
+Then, answer the questions at each prompt.  In many cases, you will simply
+have to type a single letter or number to make your selections.  Please see
+the documentation for F<mmkrpbp> and F<modulemaker>.
 
 =head1 DEFAULT VALUES
 
@@ -61,14 +74,14 @@ those set in F<ExtUtils/ModuleMaker/Defaults.pm>.
 
 =item *
 
-Default to compact top directory.  E.g., F<Alpha-Beta-Gamma> instead of 
+Default to compact top directory.  E.g., F<Alpha-Beta-Gamma> instead of
 F<Alpha/Beta/Gamma>.
 
     $self->{COMPACT} = 1;
 
 =item *
 
-Default to placing C<use_ok> tests for multiple modules in a single F<t/*.t> 
+Default to placing C<use_ok> tests for multiple modules in a single F<t/*.t>
 file rather than one F<t*.t> file for each module.
 
     $self->{EXTRA_MODULES_SINGLE_TEST_FILE} = 1;
@@ -85,6 +98,37 @@ In name of test file, test number is formatted as 2-digit rather than 3-digit.
 
     $self->{TEST_NUMBER_FORMAT} = "%02d";
 
+=item *
+
+In name of test file, use a dot (C<.>) rather than an underscore (C<_>) to
+separate the numerical and lexical parts of the name.
+
+    $defaults_ref->{TEST_NAME_SEPARATOR}            = q{.};
+
+=item *
+
+Do not include a Todo file in the top level of the distribution.
+
+    $defaults_ref->{INCLUDE_TODO}                   = 0;
+
+=item *
+
+Include F<t/pod_coverage.t> in the distribution.
+
+    $defaults_ref->{INCLUDE_POD_COVERAGE_TEST}      = 1;
+
+=item *
+
+Include F<t/pod.t> in the distribution.
+
+    $defaults_ref->{INCLUDE_POD_TEST}               = 1;
+
+=item *
+
+Do not include directory F<scripts/> in the distribution.
+
+    $defaults_ref->{INCLUDE_SCRIPTS_DIRECTORY}      = 0;
+
 =back
 
 =cut
@@ -92,14 +136,15 @@ In name of test file, test number is formatted as 2-digit rather than 3-digit.
 sub default_values {
     my $self = shift;
     my $defaults_ref = $self->SUPER::default_values();
-    $defaults_ref->{COMPACT} = 1;
-    $defaults_ref->{FIRST_TEST_NUMBER}  = 0;
-    $defaults_ref->{TEST_NUMBER_FORMAT} = "%02d";
+    $defaults_ref->{COMPACT}                        = 1;
+    $defaults_ref->{FIRST_TEST_NUMBER}              = 0;
+    $defaults_ref->{TEST_NUMBER_FORMAT}             = "%02d";
     $defaults_ref->{EXTRA_MODULES_SINGLE_TEST_FILE} = 1;
-    $defaults_ref->{TEST_NAME_SEPARATOR} = q{.};
-    $defaults_ref->{INCLUDE_TODO} = 0;
-    $defaults_ref->{INCLUDE_POD_COVERAGE_TEST}  = 1;
-    $defaults_ref->{INCLUDE_POD_TEST}           = 1;
+    $defaults_ref->{TEST_NAME_SEPARATOR}            = q{.};
+    $defaults_ref->{INCLUDE_TODO}                   = 0;
+    $defaults_ref->{INCLUDE_POD_COVERAGE_TEST}      = 1;
+    $defaults_ref->{INCLUDE_POD_TEST}               = 1;
+    $defaults_ref->{INCLUDE_SCRIPTS_DIRECTORY}      = 0;
     return $defaults_ref;;
 }
 
@@ -109,12 +154,12 @@ sub default_values {
 
 =head3 C<text_Buildfile()>
 
-  Usage     : $self->text_Buildfile() within complete_build() 
+  Usage     : $self->text_Buildfile() within complete_build()
   Purpose   : Composes text for a Buildfile for Module::Build
   Returns   : String holding text for Buildfile
   Argument  : n/a
   Throws    : n/a
-  Comment   : References EU::MM object attributes 
+  Comment   : References EU::MM object attributes
               NAME, LICENSE, AUTHOR, EMAIL and FILE
 
 =cut
@@ -128,7 +173,7 @@ use strict;
 use warnings;
 use Module::Build;
 
-my \$builder = Module::Build->new( 
+my \$builder = Module::Build->new(
     module_name         => '$self->{NAME}',
     license             => '$self->{LICENSE}',
     dist_author         => '$self->{AUTHOR} <$self->{EMAIL}>',
@@ -139,7 +184,7 @@ my \$builder = Module::Build->new(
     },
     add-to-cleanup      => [ '$add_to_cleanup' ],
     );
-    
+
 \$builder->create_build_script();
 END_OF_BUILDFILE
     return $text_of_Buildfile;
@@ -147,14 +192,14 @@ END_OF_BUILDFILE
 
 =head3 C<text_Changes()>
 
-  Usage     : $self->text_Changes($only_in_pod) within complete_build; 
+  Usage     : $self->text_Changes($only_in_pod) within complete_build;
               block_pod()
   Purpose   : Composes text for Changes file
   Returns   : String holding text for Changes file
   Argument  : $only_in_pod:  True value to get only a HISTORY section for POD
                              False value to get whole Changes file
   Throws    : n/a
-  Comment   : Accesses EU::MM object attributes 
+  Comment   : Accesses EU::MM object attributes
               NAME, VERSION, timestamp, eumm_version
 
 =cut
@@ -162,7 +207,7 @@ END_OF_BUILDFILE
 sub text_Changes {
     my ( $self, $only_in_pod ) = @_;
     my $text_of_Changes;
-    
+
     my $text_of_Changes_core = <<END_OF_CHANGES;
 $self->{VERSION} $self->{timestamp}
     - Initial release.  Created by ExtUtils::ModuleMaker $self->{eumm_version}.
@@ -190,7 +235,7 @@ EOF
   Returns   : String holding text of Makefile
   Argument  : n/a
   Throws    : n/a
-  Comment   : References EU::MM object attributes 
+  Comment   : References EU::MM object attributes
               NAME, AUTHOR, EMAIL and FILE
 
 =cut
@@ -234,7 +279,7 @@ WriteMakefile(
   Returns   : String holding text of README
   Argument  : n/a
   Throws    : n/a
-  Comment   : References EU::MM object attributes 
+  Comment   : References EU::MM object attributes
               NAME, VERSION, COPYRIGHT_YEAR and AUTHOR
 
 =cut
@@ -282,7 +327,7 @@ END_OF_BUILD
 
     my $README_middle = <<'END_OF_MIDDLE';
 
-Alternatively, to install with Module::Build, you can use the 
+Alternatively, to install with Module::Build, you can use the
 following commands:
 
 END_OF_MIDDLE
@@ -303,10 +348,10 @@ This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 END_OF_README
 
-    return  $README_top . 
-            $makemaker_instructions . 
+    return  $README_top .
+            $makemaker_instructions .
             $README_middle .
-            $mb_instructions . 
+            $mb_instructions .
             $README_bottom;
 }
 
@@ -318,7 +363,7 @@ END_OF_README
   Argument  : $module: pointer to the module being built
               (as there can be more than one module built by EU::MM);
               for the primary module it is a pointer to $self
-  Comment   : References EU::MM object attributes 
+  Comment   : References EU::MM object attributes
               NAME, AUTHOR, EMAIL and COPYRIGHT_YEAR
 
 =cut
@@ -326,7 +371,7 @@ END_OF_README
 sub text_pm_file {
     my $self = shift;
     my $module = shift;
-      
+
     my $rt_name = $self->{NAME};
     $rt_name =~ s{::}{-}g;
 
@@ -378,7 +423,7 @@ This document describes $self->{NAME} version 0.0.1
     Use subsections (=head2, =head3) as appropriate.
 
 
- ====head1 INTERFACE 
+ ====head1 INTERFACE
 
  ====for author_to_fill_in
     Write a separate section listing the public components of the modules
@@ -510,13 +555,6 @@ END_OF_PM_FILE
 ExtUtils::ModuleMaker, version 0.40 or later.
 L<http://search.cpan.org/dist/ExtUtils-ModuleMaker/>.
 
-=head1 TO DO
-
-ExtUtils::ModuleMaker::PBP is currently supported only when called within a
-Perl script.  In an upcoming version, the F<modulemaker> utility will be
-adapted to work with this extension, probably by providing a similarly
-functioning but differently named command-line utility.
-
 =head1 INCOMPATIBILITIES
 
 None reported.
@@ -538,7 +576,7 @@ James E Keenan:  jkeenan [at] cpan [dot] org
 
 Standard text of files created by ExtUtils::ModuleMaker::PBP copyright (c)
 2005 Damian Conway.  Adapted from Module::Starter::PBP and used by permission.
-Code building these files copyright (c) 2005 James E Keenan.  
+Code building these files copyright (c) 2005 James E Keenan.
 All rights reserved.
 
 This module is free software; you can redistribute it and/or
@@ -568,8 +606,11 @@ FAILURE OF THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
 SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGES.
 
+=head1 SEE ALSO
+
+F<ExtUtils::ModuleMaker>, F<modulemaker>, F<mmkrpbp>.
+
 =cut
 
 1;
 # The preceding line will help the module return a true value
-

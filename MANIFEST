@@ -1,10 +1,14 @@
 Changes
 lib/ExtUtils/ModuleMaker/PBP.pm
+lib/ExtUtils/ModuleMaker/PBP/Auxiliary.pm
+lib/ExtUtils/ModuleMaker/PBP/Interactive.pm
 LICENSE
 Makefile.PL
 MANIFEST
+MANIFEST.SKIP
+META.yml			Module meta-data (added by MakeMaker)
 README
-Todo
+scripts/mmkrpbp
 t/01_load.t
 t/02_bad_constructor.t
 t/03_quick.t
@@ -12,12 +16,12 @@ t/04_compact.t
 t/05_abstract.t
 t/06_build.t
 t/07_proxy.t
-# t/08_mmkr.t
+t/08_mmkrpbp.t
 t/09_miscargs.t
 t/10_standard_text.t
+t/11_license.t
 t/testlib/IO/Capture.pm
 t/testlib/IO/Capture/ErrorMessages.pm
 t/testlib/IO/Capture/Stderr.pm
 t/testlib/IO/Capture/Stdout.pm
 t/testlib/IO/Capture/Tie_STDx.pm
-META.yml                                 Module meta-data (added by MakeMaker)

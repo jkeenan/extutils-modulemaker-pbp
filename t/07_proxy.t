@@ -2,7 +2,7 @@
 use strict;
 local $^W = 1;
 use Test::More 
-tests =>  58;
+tests =>  57;
 # qw(no_plan);
 use_ok( 'ExtUtils::ModuleMaker::PBP' );
 use_ok( 'Cwd');
@@ -23,7 +23,7 @@ my $odir = cwd();
 SKIP: {
     eval { require 5.006_001 and require Module::Build };
     skip "tests require File::Temp, core with 5.6, and require Module::Build", 
-        (58 - 4) if $@;
+        (57 - 4) if $@;
     use warnings;
     use_ok( 'File::Temp', qw| tempdir |);
     use ExtUtils::ModuleMaker::Auxiliary qw(
@@ -67,14 +67,11 @@ SKIP: {
 
     ok( chdir "Alpha-$testmod", "cd Alpha-$testmod" );
 
-    for ( qw/Build.PL LICENSE Makefile.PL MANIFEST README/) {
-        ok( -f, "file $_ exists" );
-    }
-    ok(! -f 'Todo', 'Todo file correctly not created');
-    ok(! -f 'Changes', 'Changes file correctly not created');
-    for ( qw/lib scripts t/) {
-        ok( -d, "directory $_ exists" );
-    }
+    ok(  -d, "directory $_ exists" ) for ( qw/lib t/);
+    ok(! -d, "directory $_ does not exist" ) for ( qw/scripts/);
+
+    ok(  -f $_, "file $_ exists") for (qw/LICENSE Build.PL MANIFEST README/);
+    ok(! -f $_, "$_ file correctly not created") for (qw/Todo Changes/);
 
     ok($filetext = read_file_string('Makefile.PL'),
         'Able to read Makefile.PL');
@@ -107,14 +104,12 @@ SKIP: {
 
     ok( chdir "Alpha-$testmod", "cd Alpha-$testmod" );
 
-    for ( qw/Build.PL LICENSE Makefile.PL MANIFEST README/) {
-        ok( -f, "file $_ exists" );
-    }
-    ok(! -f 'Todo', 'Todo file correctly not created');
-    ok(! -f 'Changes', 'Changes file correctly not created');
-    for ( qw/lib scripts t/) {
-        ok( -d, "directory $_ exists" );
-    }
+    ok(  -d, "directory $_ exists" ) for ( qw/lib t/);
+    ok(! -d, "directory $_ does not exist" ) for ( qw/scripts/);
+
+    ok(  -f $_, "file $_ exists")
+        for (qw/LICENSE Build.PL Makefile.PL MANIFEST README/);
+    ok(! -f $_, "$_ file correctly not created") for (qw/Todo Changes/);
 
     ok($filetext = read_file_string('Makefile.PL'),
         'Able to read Makefile.PL');

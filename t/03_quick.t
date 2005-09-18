@@ -2,7 +2,7 @@
 use strict;
 local $^W = 1;
 use Test::More 
-tests => 37;
+tests => 39;
 # qw(no_plan);
 use_ok( 'ExtUtils::ModuleMaker::PBP' );
 use_ok( 'Cwd');
@@ -23,7 +23,7 @@ my $odir = cwd();
 SKIP: {
     eval { require 5.006_001 };
     skip "tests require File::Temp, core with Perl 5.6", 
-        (37 - 4) if $@;
+        (39 - 4) if $@;
     use warnings;
     use_ok( 'File::Temp', qw| tempdir |);
     my $tdir = tempdir( CLEANUP => 1);
@@ -51,10 +51,11 @@ SKIP: {
     ok(chdir "Sample-Module",
         "cd Sample-Module");
 
-    for (qw/Changes MANIFEST Makefile.PL LICENSE
-            README lib t/) {
-        ok (-e,
-            "$_ exists");
+    for (qw/Changes MANIFEST Makefile.PL LICENSE README lib t/) {
+        ok (-e, "$_ exists");
+    }
+    for (qw/scripts Todo/) {
+        ok (! -e, "$_ does not exist");
     }
 
     ########################################################################

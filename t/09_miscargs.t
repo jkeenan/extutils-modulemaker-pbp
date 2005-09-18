@@ -3,7 +3,7 @@
 use strict;
 local $^W = 1;
 use Test::More 
-tests =>  178;
+tests =>  181;
 # qw(no_plan);
 use_ok( 'ExtUtils::ModuleMaker::PBP' );
 use_ok( 'Cwd');
@@ -24,7 +24,7 @@ use_ok( 'ExtUtils::ModuleMaker::Auxiliary', qw(
 SKIP: {
     eval { require 5.006_001 };
     skip "tests require File::Temp, core with 5.6", 
-        (178 - 4) if $@;
+        (181 - 4) if $@;
     use warnings;
     use_ok( 'File::Temp', qw| tempdir |);
     use ExtUtils::ModuleMaker::Auxiliary qw(
@@ -72,12 +72,13 @@ SKIP: {
             $count{'mkdir'}++ if $l =~ /^mkdir/;
             $count{'writing'}++ if $l =~ /^writing file/;
         }
-        is($count{'mkdir'}, 5, "correct no. of directories created announced verbosely");
+        is($count{'mkdir'}, 4, "correct no. of directories created announced verbosely");
         is($count{'writing'}, 9, "correct no. of files created announced verbosely");
 
         ok( -d qq{Alpha-$testmod}, "compact top-level directory exists" );
         ok( chdir "Alpha-$testmod", "cd Alpha-$testmod" );
-        ok( -d, "directory $_ exists" ) for ( qw/lib scripts t/);
+        ok(  -d, "directory $_ exists" ) for ( qw/lib t/);
+        ok(! -d, "directory $_ does not exist" ) for ( qw/scripts/);
         ok( -f, "file $_ exists" )
             for ( qw/Changes LICENSE Makefile.PL MANIFEST README/);
         ok(! -f 'Todo', "Todo file correctly not created");
@@ -127,13 +128,14 @@ SKIP: {
             $count{'mkdir'}++ if $l =~ /^mkdir/;
             $count{'writing'}++ if $l =~ /^writing file/;
         }
-        is($count{'mkdir'}, 6, "correct no. of directories created announced verbosely");
+        is($count{'mkdir'}, 5, "correct no. of directories created announced verbosely");
         is($count{'writing'}, 9, "correct no. of files created announced verbosely");
 
         ok( -d qq{Alpha/$testmod}, "non-compact top-level directories exist" );
         ok( chdir "Alpha/$testmod", "cd Alpha/$testmod" );
-        ok( -d, "directory $_ exists" ) for ( qw/lib lib\/Alpha scripts t/);
-        ok( -f, "file $_ exists" )
+        ok(  -d, "directory $_ exists" ) for ( qw/lib lib\/Alpha t/);
+        ok(! -d, "directory $_ does not exist" ) for ( qw/scripts/);
+        ok(  -f, "file $_ exists" )
             for ( qw/Changes LICENSE Makefile.PL MANIFEST README/);
         ok(! -f 'Todo', "Todo file correctly not created");
         ok( -f, "file $_ exists" )
@@ -242,7 +244,7 @@ SKIP: {
     # and makes no reference one way or the other to these methods.  So their
     # default values are irrelevant;  POD, for one thing, is always generated.
 
-        
+
     ######### Set #8:  Test of EXTRA_MODULES Option ##########
      
     {
@@ -274,10 +276,13 @@ SKIP: {
 
         ok( -d qq{Alpha-$testmod}, "compact top-level directory exists" );
         ok( chdir "Alpha-$testmod", "cd Alpha-$testmod" );
-        ok( -d, "directory $_ exists" ) for ( qw/lib scripts t/);
-        ok( -f, "file $_ exists" )
+
+        ok(  -d, "directory $_ exists" ) for ( qw/lib lib\/Alpha t/);
+        ok(! -d, "directory $_ does not exist" ) for ( qw/scripts/);
+        ok(  -f, "file $_ exists" )
             for ( qw/Changes LICENSE Makefile.PL MANIFEST README/);
         ok(! -f 'Todo', "Todo file correctly not created");
+
         ok( -d, "directory $_ exists" ) for (
                 "lib/Alpha",
                 "lib/Alpha/${testmod}",
@@ -331,11 +336,15 @@ SKIP: {
         ok( $mod->complete_build(), 'call complete_build()' );
 
         ok( -d qq{Alpha-$testmod}, "compact top-level directory exists" );
+
         ok( chdir "Alpha-$testmod", "cd Alpha-$testmod" );
-        ok( -d, "directory $_ exists" ) for ( qw/lib scripts t/);
-        ok( -f, "file $_ exists" )
+
+        ok(  -d, "directory $_ exists" ) for ( qw/lib lib\/Alpha t/);
+        ok(! -d, "directory $_ does not exist" ) for ( qw/scripts/);
+        ok(  -f, "file $_ exists" )
             for ( qw/Changes LICENSE Makefile.PL MANIFEST README/);
         ok(! -f 'Todo', "Todo file correctly not created");
+
         ok( -f, "file $_ exists" )
             for ( "lib/Alpha/${testmod}.pm", "t/00.load.t" );
         
@@ -386,10 +395,13 @@ SKIP: {
 
         ok( -d qq{Alpha-$testmod}, "compact top-level directory exists" );
         ok( chdir "Alpha-$testmod", "cd Alpha-$testmod" );
-        ok( -d, "directory $_ exists" ) for ( qw/lib scripts t/);
-        ok( -f, "file $_ exists" )
+
+        ok(  -d, "directory $_ exists" ) for ( qw/lib lib\/Alpha t/);
+        ok(! -d, "directory $_ does not exist" ) for ( qw/scripts/);
+        ok(  -f, "file $_ exists" )
             for ( qw/Changes LICENSE Makefile.PL MANIFEST README/);
         ok(! -f 'Todo', "Todo file correctly not created");
+
         ok( -d, "directory $_ exists" ) for (
                 "lib/Alpha",
                 "lib/Alpha/${testmod}",
