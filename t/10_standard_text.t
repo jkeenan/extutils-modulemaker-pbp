@@ -4,7 +4,7 @@
 use strict;
 local $^W = 1;
 use Test::More 
-tests =>   44;
+tests =>   36;
 # qw(no_plan);
 use_ok( 'ExtUtils::ModuleMaker::PBP' );
 use_ok( 'Cwd');
@@ -23,7 +23,7 @@ use_ok( 'ExtUtils::ModuleMaker::Auxiliary', qw(
 SKIP: {
     eval { require 5.006_001 };
     skip "tests require File::Temp, core with 5.6", 
-        (44 - 2) if $@;
+        (36 - 4) if $@;
     use warnings;
     use_ok( 'File::Temp', qw| tempdir |);
     use ExtUtils::ModuleMaker::Auxiliary qw(
@@ -76,56 +76,23 @@ SKIP: {
         ok(@pmfilelines = read_file_array("lib/Alpha/${testmod}.pm"),
             'Able to read module into array');
 
-TODO: { local $TODO = 'These tests need to be rewritten to reflect the copy
-that is expected in the files built in the PBP style.';
-
-        # test of main pod wrapper
-        is( (grep {/^#{20} main pod documentation (begin|end)/} @pmfilelines), 2, 
-            "standard text for POD wrapper found");
-
-        # test of block new method
-        is( (grep {/^sub new/} @pmfilelines), 1, 
-            "new method found");
-
-        # test of block module header description
-        is( (grep {/^sub new/} @pmfilelines), 1, 
-            "new method found");
-
-        # test of stub documentation
-        is( (grep {/^Stub documentation for this module was created/} @pmfilelines), 
-            1, 
-            "stub documentation found");
-
-        # test of subroutine header
-        is( (grep {/^#{20} subroutine header (begin|end)/} @pmfilelines), 2, 
-            "subroutine header found");
-
-        # test of final block
-        is( (grep { /^(1;|# The preceding line will help the module return a true value)$/ } @pmfilelines), 2, 
-            "final module block found");
-
-        # test of Makefile text
-        ok(@makefilelines = read_file_array('Makefile.PL'),
-            'Able to read Makefile.PL into array');
-        is( (grep {/^# See lib\/ExtUtils\/MakeMaker.pm for details of how to influence/} @makefilelines), 1, 
-            "Makefile.PL has standard text");
-
         # test of README text
         ok(@readmelines = read_file_array('README'),
             'Able to read README into array');
-        is( (grep {/^pod2text $mod->{NAME}/} @readmelines),
+        is( (grep {/The README is used to introduce/} @readmelines),
             1,
-            "README has correct pod2text line");
-        is( (grep {/^If this is still here/} @readmelines),
+            "README has correct introductory explanation");
+        is( (grep {/^INSTALLATION/} @readmelines),
             1,
-            "README has correct top part");
-        is( (grep {/^(perl Makefile\.PL|make( (test|install))?)/} @readmelines), 
+            "README has INSTALLATION section");
+        is( (grep {/^\s+(perl Makefile\.PL|make( (test|install))?)/} 
+            @readmelines), 
             4, 
             "README has appropriate build instructions for MakeMaker");
-        is( (grep {/^If you are on a windows box/} @readmelines),
-            1,
-            "README has correct bottom part");
-} # END TODO BLOCK
+        is( (grep {/^\s+(perl Build\.PL|\.\/Build( (test|install))?)/} 
+            @readmelines), 
+            4, 
+            "README has appropriate build instructions for Module::Build");
 
         _reprocess_personal_defaults_file($pers_def_ref);
 
