@@ -4,7 +4,7 @@ package ExtUtils::ModuleMaker::PBP::Auxiliary;
 use strict;
 local $^W = 1;
 use vars qw( $VERSION @ISA @EXPORT_OK );
-$VERSION = '0.04';
+$VERSION = '0.05';
 require Exporter;
 @ISA         = qw(Exporter);
 @EXPORT_OK   = qw(
