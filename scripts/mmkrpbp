@@ -10,7 +10,7 @@ use ExtUtils::ModuleMaker::Opts;
 # use ExtUtils::ModuleMaker::Interactive;
 # use Carp;
 use vars qw ( $VERSION );
-$VERSION = '0.05';
+$VERSION = '0.06';
 # use Data::Dumper;
 
 
@@ -135,8 +135,8 @@ mmkrpbp - interactive interface to ExtUtils::ModuleMaker::PBP
 
 =head1 VERSION
 
-This document references version 0.05 of mmkrpbp, released
-to CPAN on September 17, 2005.
+This document references version 0.06 of mmkrpbp, released
+to CPAN on September 19, 2005.
 
 =head1 DESCRIPTION
 
