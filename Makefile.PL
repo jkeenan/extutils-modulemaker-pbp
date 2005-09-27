@@ -17,6 +17,6 @@ WriteMakefile(
                         File::Basename  => 0, # in the Perl core
                         File::Path      => 0, # in the Perl core
                         File::Temp      => 0, # in the Perl core since 5.6
-                        ExtUtils::ModuleMaker    => 0.41,
+                        ExtUtils::ModuleMaker    => 0.41_02,
                     },
 );
