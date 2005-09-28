@@ -3,7 +3,7 @@
 use strict;
 local $^W = 1;
 use Test::More tests => 16;
-use_ok( 'ExtUtils::ModuleMaker' );
+use_ok( 'ExtUtils::ModuleMaker::PBP' );
 use_ok( 'ExtUtils::ModuleMaker::Auxiliary', qw(
         _save_pretesting_status
         _restore_pretesting_status
@@ -29,12 +29,12 @@ SKIP: {
 
         $testmod = 'Rho';
         
-        ok( $mod = ExtUtils::ModuleMaker->new( 
+        ok( $mod = ExtUtils::ModuleMaker::PBP->new( 
                 NAME           => "Alpha::$testmod",
                 COMPACT        => 0,
                 VERBOSE        => 1,
             ),
-            "call ExtUtils::ModuleMaker->new for Alpha-$testmod"
+            "call ExtUtils::ModuleMaker::PBP->new for Alpha-$testmod"
         );
         
         my $dump;
@@ -50,8 +50,8 @@ SKIP: {
         
     }
 
-    ok(chdir $statusref->{cwd},
-        "changed back to original directory");
+    ok(chdir $statusref->{cwd}, "changed back to original directory");
+
 } # end SKIP block
 
 END {

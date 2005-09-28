@@ -3,7 +3,7 @@
 use strict;
 local $^W = 1;
 use Test::More tests => 32;
-use_ok( 'ExtUtils::ModuleMaker' );
+use_ok( 'ExtUtils::ModuleMaker::PBP' );
 use_ok( 'ExtUtils::ModuleMaker::Auxiliary', qw(
         _save_pretesting_status
         _restore_pretesting_status
@@ -33,12 +33,11 @@ SKIP: {
 
         $testmod = 'Beta';
         
-        ok( $mod = ExtUtils::ModuleMaker->new( 
+        ok( $mod = ExtUtils::ModuleMaker::PBP->new( 
                 NAME           => "Alpha::$testmod",
-                COMPACT        => 1,
                 VERBOSE        => 1,
             ),
-            "call ExtUtils::ModuleMaker->new for Alpha-$testmod"
+            "call ExtUtils::ModuleMaker::PBP->new for Alpha-$testmod"
         );
         
         my ($capture, %count);
@@ -50,24 +49,26 @@ SKIP: {
             $count{'mkdir'}++ if $l =~ /^mkdir/;
             $count{'writing'}++ if $l =~ /^writing file/;
         }
-        is($count{'mkdir'}, 5, "correct no. of directories created announced verbosely");
-        is($count{'writing'}, 8, "correct no. of files created announced verbosely");
+        is($count{'mkdir'}, 4, "correct no. of directories created announced verbosely");
+        is($count{'writing'}, 9, "correct no. of files created announced verbosely");
 
         ok( -d qq{Alpha-$testmod}, "compact top-level directory exists" );
         ok( chdir "Alpha-$testmod", "cd Alpha-$testmod" );
-        ok( -d, "directory $_ exists" ) for ( qw/lib scripts t/);
+        ok(  -d, "directory $_ exists" ) for ( qw/lib t/);
+        ok(! -d, "directory $_ does not exist" ) for ( qw/scripts/);
         ok( -f, "file $_ exists" )
-            for ( qw/Changes LICENSE Makefile.PL MANIFEST README Todo/);
+            for ( qw/Changes LICENSE Makefile.PL MANIFEST README/);
+        ok(! -f 'Todo', "Todo file correctly not created");
         ok( -f, "file $_ exists" )
-            for ( "lib/Alpha/${testmod}.pm", "t/001_load.t" );
+            for ( "lib/Alpha/${testmod}.pm", "t/00.load.t" );
         
         ok($filetext = read_file_string('Makefile.PL'),
             'Able to read Makefile.PL');
         
     }
 
-    ok(chdir $statusref->{cwd},
-        "changed back to original directory");
+    ok(chdir $statusref->{cwd}, "changed back to original directory");
+
 } # end SKIP block
 
 END {
