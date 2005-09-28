@@ -19,4 +19,5 @@ WriteMakefile(
                         File::Temp      => 0, # in the Perl core since 5.6
                         ExtUtils::ModuleMaker    => 0.41_02,
                     },
+    test        => { TESTS => join q{ }, map {glob} qw( t/*.t t/*/*.t ) },
 );

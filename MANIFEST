@@ -15,7 +15,6 @@ t/04_compact.t
 t/05_abstract.t
 t/06_build.t
 t/07_proxy.t
-t/09_miscargs.t
 t/10_standard_text.t
 t/failsafe/201.t
 t/failsafe/202.t
@@ -70,6 +69,13 @@ t/license/sun.t
 t/license/vovida.t
 t/license/vovida_1_0.t
 t/license/zlib.t
+t/miscargs/901.t
+t/miscargs/902.t
+t/miscargs/903.t
+t/miscargs/904.t
+t/miscargs/908.t
+t/miscargs/909.t
+t/miscargs/910.t
 t/mmkr/801.t
 t/mmkr/802.t
 t/mmkr/803.t
