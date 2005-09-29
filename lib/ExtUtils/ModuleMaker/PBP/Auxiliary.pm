@@ -1,10 +1,10 @@
 package ExtUtils::ModuleMaker::PBP::Auxiliary;
 # Contains test subroutines for distribution with ExtUtils::ModuleMaker::PBP
-# As of:  September 28, 2005
+# As of:  September 29, 2005
 use strict;
 local $^W = 1;
 use vars qw( $VERSION @ISA @EXPORT_OK );
-$VERSION = '0.07';
+$VERSION = '0.08';
 require Exporter;
 @ISA         = qw(Exporter);
 @EXPORT_OK   = qw(
