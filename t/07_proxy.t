@@ -17,7 +17,7 @@ my $statusref = _save_pretesting_status();
 SKIP: {
     eval { require 5.006_001 and require Module::Build };
     skip "tests require File::Temp, core with 5.6, and require Module::Build", 
-        (56 - 2) if $@;
+        (56 - 10) if $@;
     use warnings;
     use_ok( 'File::Temp', qw| tempdir |);
 
@@ -31,8 +31,7 @@ SKIP: {
 
     ########## Variant:  'Module::Build and proxy Makefile.PL' ##########
 
-    ok( 
-        $mod = ExtUtils::ModuleMaker::PBP->new(
+    ok( $mod = ExtUtils::ModuleMaker::PBP->new(
             NAME           => "Alpha::$testmod",
             ABSTRACT       => 'Test of the capacities of EU::MM',
             CHANGES_IN_POD => 1,
@@ -68,8 +67,7 @@ SKIP: {
 
     ########## Variant:  'Module::Build and Proxy' ##########
 
-    ok( 
-        $mod = ExtUtils::ModuleMaker::PBP->new(
+    ok( $mod = ExtUtils::ModuleMaker::PBP->new(
             NAME           => "Alpha::$testmod",
             ABSTRACT       => 'Test of the capacities of EU::MM',
             CHANGES_IN_POD => 1,
