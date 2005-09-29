@@ -2,7 +2,7 @@ package ExtUtils::ModuleMaker::PBP;
 use strict;
 use warnings;
 our ( $VERSION );
-$VERSION = '0.06_01';
+$VERSION = '0.07';
 use base qw( ExtUtils::ModuleMaker );
 
 =head1 NAME
@@ -35,8 +35,8 @@ ExtUtils::ModuleMaker::PBP - Create a Perl extension in the style of Damian Conw
 
 =head1 VERSION
 
-This document references version 0.06_01 of ExtUtils::ModuleMaker::PBP, released
-to CPAN on September 27, 2005.
+This document references version 0.07 of ExtUtils::ModuleMaker::PBP, released
+to CPAN on September 28, 2005.
 
 =head1 DESCRIPTION
 
