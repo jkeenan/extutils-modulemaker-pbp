@@ -8,16 +8,14 @@ WriteMakefile(
     VERSION_FROM => 'lib/ExtUtils/ModuleMaker/PBP.pm', # finds \$VERSION
     AUTHOR       => 'James E Keenan (jkeenan@cpan.org)',
     ABSTRACT     => 'Create a Perl extension in the style of Damian Conway\'s Perl Best Practices',
-    EXE_FILES    => [
-                        'scripts/mmkrpbp',
-                    ],
+    EXE_FILES    => [ 'scripts/mmkrpbp' ],
     PREREQ_PM    => {
-                        Test::More      => 0.44,
-                        Getopt::Std     => 0, # in the Perl core
-                        File::Basename  => 0, # in the Perl core
-                        File::Path      => 0, # in the Perl core
-                        File::Temp      => 0, # in the Perl core since 5.6
-                        ExtUtils::ModuleMaker    => 0.43,
-                    },
+        Test::More      => 0.44,
+        Getopt::Std     => 0, # in the Perl core
+        File::Basename  => 0, # in the Perl core
+        File::Path      => 0, # in the Perl core
+        ($^O =~ /Win32/ ? (Win32 => 0) : ()),
+        ExtUtils::ModuleMaker    => 0.43,
+    },
     test        => { TESTS => join q{ }, map {glob} qw( t/*.t t/*/*.t ) },
 );
