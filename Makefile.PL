@@ -15,7 +15,7 @@ WriteMakefile(
         File::Basename  => 0, # in the Perl core
         File::Path      => 0, # in the Perl core
         ($^O =~ /Win32/ ? (Win32 => 0) : ()),
-        ExtUtils::ModuleMaker    => 0.44,
+        ExtUtils::ModuleMaker    => 0.43_04,
     },
     test        => { TESTS => join q{ }, map {glob} qw( t/*.t t/*/*.t ) },
 );
