@@ -1,20 +1,21 @@
 Revision history for Perl module ExtUtils::ModuleMaker::PBP
 
+0.0801 Sun Nov 13 16:48:32 EST 2005
+
+
+
 0.08 Thu Sep 29 19:38:09 EDT 2005
-    - Corrected error in test suite.  All files had incorrect number of
-      skipped tests.
+Corrected error in test suite.  All files had incorrect number of skipped tests.
 
 0.07     Sep 28 2005
 
 0.06 Mon Sep 19 18:31:53 EDT 2005
-    - Only change:  In Makefile.PL, changed required version of
-      ExtUtils::ModuleMaker from 0.40 to 0.41 (due to bug fix in
-ExtUtils::ModuleMaker).
+Only change:  In Makefile.PL, changed required version of ExtUtils::ModuleMaker from 0.40 to 0.41 (due to bug fix in ExtUtils::ModuleMaker).
 
 0.05 Sun Sep 19          2005
-    - First CPAN upload, tied to ExtUtils::ModuleMaker version 0.40.
+First CPAN upload, tied to ExtUtils::ModuleMaker version 0.40.
 
 0.01 Mon Sep  5 19:39:49 2005
-    - original version; created by ExtUtils::ModuleMaker 0.39
+original version; created by ExtUtils::ModuleMaker 0.39
 
 
