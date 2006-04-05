@@ -1,9 +1,13 @@
 Revision history for Perl module ExtUtils::ModuleMaker::PBP
 
-0.0801 Sun Nov 13 16:48:32 EST 2005
+0.09    Apr 05 2006
+
 Changes in Makefile.PL:  Included code to check for Win32 module if on Win32.
 Deleted File::Temp, which is required only in test suite.  Adapted t/01_load.t
 to use subroutines from CPAN module File::Save::Home.
+
+In response to bug report from Gabriel Fortuna for ExtUtils::ModuleMaker, 
+corrected bug in t/01_load.t.
 
 
 0.08 Thu Sep 29 19:38:09 EDT 2005
