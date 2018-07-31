@@ -19,6 +19,7 @@ CVS/.*
 \.DS_Store$
 _uu$
 \.svn
+bug/
 cover_db/
 coverage/
 html/
@@ -30,3 +31,11 @@ svndiff/
 ^init
 ^results
 ^htmlify
+^.git/
+^MYMETA.*
+\.version_info.pl
+\.gitignore
+\.travis.yml
+\.appveyor.yml
+^README.md
+^.README.pod

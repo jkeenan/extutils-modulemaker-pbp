@@ -4,9 +4,8 @@ lib/ExtUtils/ModuleMaker/PBP/Auxiliary.pm
 lib/ExtUtils/ModuleMaker/PBP/Interactive.pm
 LICENSE
 Makefile.PL
-MANIFEST
+MANIFEST			This list of files
 MANIFEST.SKIP
-META.yml			Module meta-data (added by MakeMaker)
 README
 scripts/mmkrpbp
 t/01_load.t
