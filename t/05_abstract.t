@@ -1,35 +1,25 @@
 # t/05_abstract.t
 use strict;
-local $^W = 1;
-use Test::More tests => 34;
+use warnings;
+use Test::More qw(no_plan); # tests => 34;
+use File::Spec;
 use_ok( 'ExtUtils::ModuleMaker::PBP' );
 use_ok( 'ExtUtils::ModuleMaker::Auxiliary', qw(
-        _save_pretesting_status
-        _restore_pretesting_status
-        read_file_string
-        six_file_tests
-    )
-);
+    prepare_mockdirs
+    read_file_string
+    five_file_tests
+) );
 
-my $statusref = _save_pretesting_status();
-
-SKIP: {
-    eval { require 5.006_001 };
-    skip "tests require File::Temp, core with Perl 5.6", 
-        (34 - 10) if $@;
-    use warnings;
-    use_ok( 'File::Temp', qw| tempdir |);
-
-    my $tdir = tempdir( CLEANUP => 1);
-    ok(chdir $tdir, 'changed to temp directory for testing');
-
-    ########################################################################
-
+{
     my $mod;
     my $testmod = 'Beta';
 
+    my @components = ( 'Alpha', $testmod );
+    my $module_name = join('::' => @components);
+    my $dist_name = join('-' => @components);
+
     ok( $mod = ExtUtils::ModuleMaker::PBP->new( 
-            NAME           => "Alpha::$testmod",
+            NAME           => $module_name,
             ABSTRACT       => 'Test of the capacities of EU::MM',
             CHANGES_IN_POD => 1,
             AUTHOR         => 'Phineas T. Bluster',
@@ -38,34 +28,31 @@ SKIP: {
             WEBSITE        => 'http://www.anonymous.com/~phineas',
             EMAIL          => 'phineas@anonymous.com',
         ),
-        "call ExtUtils::ModuleMaker::PBP->new for Alpha-$testmod"
+        "call ExtUtils::ModuleMaker::PBP->new for $dist_name"
     );
 
     ok( $mod->complete_build(), 'call complete_build()' );
 
-    ok( chdir "Alpha-$testmod", "cd Alpha-$testmod" );
-
-    ok(  -d, "directory $_ exists" ) for ( qw/lib t/);
-    ok(! -d, "directory $_ does not exist" ) for ( qw/scripts/);
-
-    ok(  -f $_, "file $_ exists") for (qw/LICENSE Makefile.PL MANIFEST README/);
-    ok(! -f $_, "$_ file correctly not created") for (qw/Todo Changes/);
+    for my $f ( qw| MANIFEST Makefile.PL LICENSE README | ) {
+        my $ff = File::Spec->catfile($dist_name, $f);
+        ok (-e $ff, "$ff exists");
+    }
+    ok(! -f File::Spec->catfile($dist_name, 'Changes'),
+        "Changes file not created");
+    #for my $d ( qw| lib scripts t | ) {
+    for my $d ( qw| lib t | ) {
+        my $dd = File::Spec->catdir($dist_name, $d);
+        ok(-d $dd, "Directory '$dd' exists");
+    }   
 
     my ($filetext);
-    ok($filetext = read_file_string('Makefile.PL'),
+    ok($filetext = read_file_string(File::Spec->catfile($dist_name, 'Makefile.PL')),
         'Able to read Makefile.PL');
     ok($filetext =~ m|AUTHOR\s+=>\s+.Phineas\sT.\sBluster|,
-        'Makefile.PL contains correct author');
-    ok($filetext =~ m|AUTHOR.*<phineas\@anonymous\.com>|,
-        'Makefile.PL contains correct e-mail');
+        'Makefile.PL contains correct author') or diag($filetext);
+    ok($filetext =~ m|AUTHOR.*phineas\@anonymous\.com|,
+        'Makefile.PL contains correct e-mail') or diag($filetext);
 
-    six_file_tests(8, $testmod); # first arg is # entries in MANIFEST
-
-    ok(chdir $statusref->{cwd}, "changed back to original directory");
-
-} # end SKIP block
-
-END {
-    _restore_pretesting_status($statusref);
+    five_file_tests(8, \@components); # first arg is # entries in MANIFEST
 }
 
