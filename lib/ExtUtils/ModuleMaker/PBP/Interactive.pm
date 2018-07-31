@@ -1,14 +1,14 @@
 package ExtUtils::ModuleMaker::PBP::Interactive;
 # as of 04-05-2006
 use strict;
-local $^W = 1;
+use warnings;
+our ( $VERSION );
 BEGIN {
-    use base qw(
+    use parent qw(
         ExtUtils::ModuleMaker::PBP
         ExtUtils::ModuleMaker::Interactive
         ExtUtils::ModuleMaker
     );
-    use vars qw ( $VERSION );
     $VERSION = '0.09';
 }
 use Carp;

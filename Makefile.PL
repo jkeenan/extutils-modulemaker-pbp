@@ -19,7 +19,7 @@ my %Makefile_Args = (
         'File::Temp'        => 0, # in the Perl core
         ($^O =~ /Win32/ ? ('Win32' => 0) : ()),
         'File::HomeDir'     => 0.86,
-        'ExtUtils::ModuleMaker'    => 0.62,
+        'ExtUtils::ModuleMaker'    => 0.63,
     },
     ( $mm_ver < 6.63_03 ? 'BUILD_REQUIRES' : 'TEST_REQUIRES' ) => {
         'Capture::Tiny' => 0,

@@ -3,7 +3,7 @@ use strict;
 use warnings;
 our ( $VERSION );
 $VERSION = '0.09';
-use base qw( ExtUtils::ModuleMaker );
+use parent qw( ExtUtils::ModuleMaker );
 
 =head1 NAME
 
