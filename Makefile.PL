@@ -44,6 +44,7 @@ my %Makefile_Args = (
             },
         },
     })),
+    test        => { TESTS => join q{ }, map {glob} qw( t/*.t t/*/*.t ) },
 );
 
 WriteMakefile(%Makefile_Args);

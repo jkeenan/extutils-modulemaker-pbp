@@ -1,7 +1,7 @@
 # t/05_abstract.t
 use strict;
 use warnings;
-use Test::More tests => 21;
+use Test::More qw(no_plan); # tests => 21;
 use Cwd;
 use File::Temp qw(tempdir);
 use File::Spec;
@@ -9,6 +9,9 @@ use_ok( 'ExtUtils::ModuleMaker::PBP' );
 use_ok( 'ExtUtils::ModuleMaker::Auxiliary', qw(
     prepare_mockdirs
     read_file_string
+) );
+use_ok( 'ExtUtils::ModuleMaker::PBP::Auxiliary', qw(
+    check_MakefilePL 
     five_file_tests
 ) );
 
@@ -59,6 +62,7 @@ use_ok( 'ExtUtils::ModuleMaker::Auxiliary', qw(
     ok($filetext =~ m|AUTHOR.*phineas\@anonymous\.com|,
         'Makefile.PL contains correct e-mail') or diag($filetext);
 
+print "XXX: $ExtUtils::ModuleMaker::Auxiliary::VERSION\n";
     five_file_tests(8, \@components); # first arg is # entries in MANIFEST
 
     ########################################################################
