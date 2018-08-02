@@ -1,7 +1,9 @@
 # t/04_compact.t
 use strict;
-local $^W = 1;
-use Test::More tests => 16;
+use warnings;
+use Test::More tests => 18;
+use Cwd;
+use File::Temp qw(tempdir);
 use_ok( 'ExtUtils::ModuleMaker::PBP' );
 use_ok( 'ExtUtils::ModuleMaker::Auxiliary', qw(
     prepare_mockdirs
@@ -10,8 +12,12 @@ use_ok( 'ExtUtils::ModuleMaker::Auxiliary', qw(
 ) );
 
 {
-    my $mod;
+    my $cwd = cwd();
 
+    my $tdir = tempdir( CLEANUP => 1);
+    ok(chdir $tdir, 'changed to temp directory for testing');
+
+    my $mod;
     ok($mod  = ExtUtils::ModuleMaker::PBP->new
     			( 
     				NAME		=> 'Sample::Module::Foo',
@@ -46,5 +52,9 @@ use_ok( 'ExtUtils::ModuleMaker::Auxiliary', qw(
 
     ok($filetext =~ m/Loose lips sink ships/,
     	"correct LICENSE generated");
+
+    ########################################################################
+
+    ok(chdir $cwd, "Changed back to original directory");
 }
 

@@ -1,7 +1,9 @@
 # t/05_abstract.t
 use strict;
 use warnings;
-use Test::More qw(no_plan); # tests => 34;
+use Test::More tests => 21;
+use Cwd;
+use File::Temp qw(tempdir);
 use File::Spec;
 use_ok( 'ExtUtils::ModuleMaker::PBP' );
 use_ok( 'ExtUtils::ModuleMaker::Auxiliary', qw(
@@ -11,13 +13,18 @@ use_ok( 'ExtUtils::ModuleMaker::Auxiliary', qw(
 ) );
 
 {
-    my $mod;
+    my $cwd = cwd();
+
+    my $tdir = tempdir( CLEANUP => 1);
+    ok(chdir $tdir, 'changed to temp directory for testing');
+
     my $testmod = 'Beta';
 
     my @components = ( 'Alpha', $testmod );
     my $module_name = join('::' => @components);
     my $dist_name = join('-' => @components);
 
+    my $mod;
     ok( $mod = ExtUtils::ModuleMaker::PBP->new( 
             NAME           => $module_name,
             ABSTRACT       => 'Test of the capacities of EU::MM',
@@ -39,7 +46,6 @@ use_ok( 'ExtUtils::ModuleMaker::Auxiliary', qw(
     }
     ok(! -f File::Spec->catfile($dist_name, 'Changes'),
         "Changes file not created");
-    #for my $d ( qw| lib scripts t | ) {
     for my $d ( qw| lib t | ) {
         my $dd = File::Spec->catdir($dist_name, $d);
         ok(-d $dd, "Directory '$dd' exists");
@@ -54,5 +60,9 @@ use_ok( 'ExtUtils::ModuleMaker::Auxiliary', qw(
         'Makefile.PL contains correct e-mail') or diag($filetext);
 
     five_file_tests(8, \@components); # first arg is # entries in MANIFEST
+
+    ########################################################################
+
+    ok(chdir $cwd, "Changed back to original directory");
 }
 
